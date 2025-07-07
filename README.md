@@ -1,4 +1,6 @@
 # plan-search-chatbot
+This project is an assetized version of the general-inquiry-chatbot, originally developed by [@HakjunMIN](https://github.com/HakjunMIN), [@hyogrin](https://github.com/hyogrin) and [@YOONPYO](https://github.com/YOONPYOGitHub). It has been further developed to support users in exploring Microsoft products, comparing options, and receiving real-time assistance via a conversational interface.
+
 ![plan-search-chatbot](images/plan-search-ui-design1.png)
 
 # Project Structure

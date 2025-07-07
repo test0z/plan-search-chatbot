@@ -49,7 +49,7 @@ EXAMPLE_PROMPTS = {
         "product_info": {
             "title": "Questions about Product", 
             "description": "Ask questions about various Microsoft products",
-            "prompt": "Can you recommend a Surface notebook other than 12inches from Microsoft?"
+            "prompt": "Can you recommend a Surface model other than 12inches from Microsoft?"
         },
         "recommendation": {
             "title": "Recommendation",

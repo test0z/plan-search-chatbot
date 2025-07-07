@@ -14,13 +14,13 @@ The project is organized into two main parts:
 
 The backend provides a RESTful API for the chatbot, handling natural language processing, search, and responses through Azure OpenAI services.
 
-[Backend README](backend/README.md)
+[Backend README](app/backend/README.md)
 
 ## frontend
 
 The frontend provides a user interface for interacting with the chatbot. It is built using React and communicates with the backend API to send and receive messages.
 
-[Frontend README](frontend/README.md)
+[Frontend README](app/frontend/README.md)
 
 ## Deployment for Azure Container Apps
 The backend can be deployed to Azure Container Apps for scalable and managed hosting. The deployment configuration is provided in the `infra` directory.

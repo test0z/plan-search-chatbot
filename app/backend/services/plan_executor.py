@@ -124,7 +124,7 @@ class PlanExecutor:
                 if stream:
                     yield f"data: ### {LOCALE_MSG['searching']} ({i+1}/{len(search_queries)}): {query}\n\n"
                 
-                search_results = search_crawler.search(query)
+                search_results = search_crawler.search(query, locale=locale)
                 
                 if search_results:
                     url_snippet_tuples = [(r["link"], r["snippet"]) for r in search_results]

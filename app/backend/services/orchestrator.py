@@ -163,6 +163,7 @@ class Orchestrator:
                 logger.info(f"##### Using External Search Engine ##### (queries={queries}) ")
                 search_results = search_crawler.search(
                     queries["search_query"],
+                    locale=locale,
                 )
                 
                 logger.info(f"Search results: {search_results}")

@@ -5,7 +5,7 @@ import httpx
 import redis
 import scrapy
 from urllib.parse import urljoin
-from typing import List, Tuple, Dict, Any
+from typing import List, Optional, Tuple, Dict, Any
 import logging
 from abc import ABC, abstractmethod
 
@@ -55,13 +55,14 @@ class SearchCrawler(ABC):
         self.cache_expiration = int(os.getenv("REDIS_CACHE_EXPIRED_SECOND", 604800))
     
     @abstractmethod
-    def search(self, query: str) -> List[Dict[str, str]]:
+    def search(self, query: str, locale: Optional[str] = "ko-KR") -> List[Dict[str, str]]:
         """
         Perform a web search using a specific search engine.
         
         Args:
             query: The search query
-            
+            locale: The locale for the search query
+
         Returns:
             A list of search result items
         """
@@ -187,14 +188,15 @@ class GoogleSearchCrawler(SearchCrawler):
         self.google_api_key = os.getenv("GOOGLE_API_KEY")
         self.google_cse_id = os.getenv("GOOGLE_CSE_ID")
         self.google_max_result = os.getenv("GOOGLE_MAX_RESULT")
-    
-    def search(self, query: str) -> List[Dict[str, str]]:
+
+    def search(self, query: str, locale: Optional[str] = "ko-KR") -> List[Dict[str, str]]:
         """
         Perform a Google search using Custom Search API.
         
         Args:
             query: The search query
-            
+            locale: The locale for the search query
+
         Returns:
             A list of search result items
         """
@@ -208,7 +210,7 @@ class GoogleSearchCrawler(SearchCrawler):
             "key": self.google_api_key,
             "cx": self.google_cse_id,
             "num": self.google_max_result,
-            "locale": "ko-KR",
+            "locale": locale,
             "filter": "1",
         }
         
@@ -239,14 +241,15 @@ class BingSearchCrawler(SearchCrawler):
         self.bing_api_key = os.getenv("BING_API_KEY")
         self.bing_custom_config_id = os.getenv("BING_CUSTOM_CONFIG_ID")
         self.bing_max_result = int(os.getenv("BING_MAX_RESULT", "10"))
-    
-    def search(self, query: str) -> List[Dict[str, str]]:
+
+    def search(self, query: str, locale: Optional[str] = "ko-KR") -> List[Dict[str, str]]:
         """
         Perform a Bing search using Bing Search API.
         
         Args:
             query: The search query
-            
+            locale: The locale for the search query
+
         Returns:
             A list of search result items
         """
@@ -266,7 +269,8 @@ class BingSearchCrawler(SearchCrawler):
         params = {
             "q": query + " -filetype:pdf",
             "count": self.bing_max_result,
-            "mkt": "ko-KR",
+
+            "mkt": locale,
             "responseFilter": "Webpages",
         }
         if self.bing_custom_config_id:

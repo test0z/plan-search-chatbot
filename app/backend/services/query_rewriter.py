@@ -60,9 +60,12 @@ class QueryRewriter:
         """
         if not self.client:
             logger.error("No OpenAI client available for query rewriting")
-
-            search_query = f"마이크로소프트 {original_query}"
-            llm_query = f"마이크로소프트 {original_query}"
+            if locale == "ko-KR":
+                search_query = f"마이크로소프트 {original_query}"
+                llm_query = f"마이크로소프트 {original_query}"
+            else:
+                search_query = f"Microsoft {original_query}"
+                llm_query = f"Microsoft {original_query}"
             return {"search_query": search_query, "llm_query": llm_query}
             
         try:
@@ -93,8 +96,12 @@ class QueryRewriter:
         except Exception as e:
             logger.error(f"Error rewriting query: {str(e)}")
             # Fallback to a simple rewrite
-            search_query = f"마이크로소프트 {original_query}"
-            llm_query = f"마이크로소프트 {original_query}"
+            if locale == "ko-KR":
+                search_query = f"마이크로소프트 {original_query}"
+                llm_query = f"마이크로소프트 {original_query}"
+            else:
+                search_query = f"Microsoft {original_query}"
+                llm_query = f"Microsoft {original_query}"
             return {"search_query": search_query, "llm_query": llm_query}
         
     async def rewrite_plan_query(self, original_query: str, 
@@ -140,6 +147,6 @@ class QueryRewriter:
         except Exception as e:
             logger.error(f"Error rewriting query: {str(e)}")
             # Fallback to a simple rewrite
-            expanded_query = f"마이크로소프트 {original_query}"
-            search_queries = [f"마이크로소프트 {original_query}"]
+            expanded_query = f"Microsoft {original_query}"
+            search_queries = [f"Microsoft {original_query}"]
             return {"expanded_query": expanded_query, "search_queries": search_queries}

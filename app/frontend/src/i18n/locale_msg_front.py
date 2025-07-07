@@ -54,7 +54,7 @@ EXAMPLE_PROMPTS = {
         "recommendation": {
             "title": "Recommendation",
             "description": "Ask recommendation for a product line", 
-            "prompt": "Can you recommend a good smartphone for my parents?"
+            "prompt": "Can you recommend a good office software for my parents?"
         },
         "comparison": {
             "title": "Comparison",
@@ -81,12 +81,12 @@ EXAMPLE_PROMPTS = {
         "product_info": {
             "title": "제품 질문",
             "description": "다양한 마이크로소프트 제품에 대한 질문하기",
-            "prompt": "마이크로소프트 제품 중 12인치가 아닌 서피스 노트북 추천해줘"
+            "prompt": "마이크로소프트 제품 중 12인치가 아닌 서피스 모델 추천해줘"
         },
         "recommendation": {
             "title": "추천",
             "description": "제품 라인에 대한 추천 요청하기",
-            "prompt": "부모님께 좋은 서피스 노트북을 추천해줄 수 있어?"
+            "prompt": "부모님께 좋은 오피스 소프트웨어를 추천해줄 수 있어?"
         },
         "comparison": {
             "title": "비교",

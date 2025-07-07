@@ -1,0 +1,49 @@
+
+
+# This tests is not working as a stream mode
+
+## search_engine: google_search_crawling or bing_grounding_ai_agent
+
+@HostAddress = http://localhost:8000
+
+POST {{HostAddress}}/chat/
+Accept: application/json
+Content-Type: application/json
+
+{
+    "messages": [
+      {
+        "role": "user",
+        "content": "Compare Surface Pro and old versions especially camera "
+      }
+    ],
+    "stream": true, 
+    "search_engine": "google_search_crawling"
+}
+
+## this tests is working as a stream mode in a bash
+
+
+curl -X POST http://localhost:8000/deep_search \
+  -H "Content-Type: application/json" \
+  -d '{
+    "messages": [
+      {
+        "role": "user",
+        "content": "마이크로소프트 제품 최신 개선 점 "                             
+      }
+    ],
+    "stream": true
+  }'
+
+  curl -X POST http://localhost:8000/deep_search \
+  -H "Content-Type: application/json" \
+  -d '{
+    "messages": [
+      {
+        "role": "user",
+        "content": "마이크로소프트 제품 최신 개선 점 "                             
+      }
+    ],
+    "stream": true
+  }'

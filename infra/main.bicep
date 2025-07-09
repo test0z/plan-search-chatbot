@@ -22,7 +22,6 @@ resource acr 'Microsoft.ContainerRegistry/registries@2023-07-01' existing = {
   name: acrName
 }
 
-
 resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   name: guid(resourceGroup().id, managedIdentity.id, 'acrpull')
   scope: acr
@@ -107,6 +106,7 @@ resource backendApp 'Microsoft.App/containerApps@2025-02-02-preview' = {
       }]
     }
     template: {
+      revisionSuffix: 'be-${uniqueString(backendContainerImage)}'
       containers: [{ 
         name: 'backend'
         image: backendContainerImage
@@ -177,6 +177,7 @@ resource frontendApp 'Microsoft.App/containerApps@2025-02-02-preview' = {
       ]      
     }
     template: {
+      revisionSuffix: 'fe-${uniqueString(frontendContainerImage)}'
       containers: [
         {
           name: 'frontend'

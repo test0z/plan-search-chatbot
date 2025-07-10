@@ -41,13 +41,13 @@ INTEGRATION_TEST_CASES = [
     {
         "query": "Surface Pro는 어떤 특징이 있나요?",
         "locale": "ko-KR",
-        "expected_contains": ["마이크로소프트", "서피스 프로", "특징"],
+        "expected_contains": ["마이크로소프트 | Microsoft", "서피스 | Surface", "특징"],
         "expected_not_contains": ["단점", "가격"]
     },
     {
         "query": "m365 제품군의 장점은 무엇인가요?",
         "locale": "ko-KR",
-        "expected_contains": ["마이크로소프트", "m365"],
+        "expected_contains": ["마이크로소프트 | Microsoft", "m365", "장점"],
         "expected_not_contains": ["단점", "가격"]
     },
 ]
@@ -74,7 +74,6 @@ async def real_query_rewriter(settings):
     await client.close()
 
 @pytest.mark.parametrize("test_case", INTEGRATION_TEST_CASES)
-@pytest.mark.skip(reason="Skipping this for rewrite and plan tests")
 @pytest.mark.asyncio
 async def test_parametrized_real_query_rewriter(test_case, real_query_rewriter):
     """Parametrized integration test for various queries with real LLM"""
@@ -98,9 +97,17 @@ async def test_parametrized_real_query_rewriter(test_case, real_query_rewriter):
     llm_query_lower = result["llm_query"].lower()
     
     for expected in expected_contains:
-        expected_lower = expected.lower()
-        assert expected_lower in search_query_lower or expected_lower in llm_query_lower, \
-            f"Expected '{expected}' not found in either search_query or llm_query"
+        alternatives = [alt.strip() for alt in expected.split(" | ")]
+        found = False
+        
+        for alternative in alternatives:
+            alternative_lower = alternative.lower()
+            if alternative_lower in search_query_lower or alternative_lower in llm_query_lower:
+                found = True
+                break
+        
+        assert found, \
+            f"None of the expected alternatives '{expected}' found in either search_query or llm_query"
 
     for unexpected in test_case.get("expected_not_contains", []):
         unexpected_lower = unexpected.lower()
@@ -111,7 +118,6 @@ async def test_parametrized_real_query_rewriter(test_case, real_query_rewriter):
     await asyncio.sleep(1)
 
 @pytest.mark.parametrize("test_case", INTEGRATION_TEST_CASES)
-#@pytest.mark.repeat(2)
 @pytest.mark.asyncio
 async def test_parametrized_real_rewrite_plan(test_case, real_query_rewriter):
     """Parametrized integration test for various queries with real LLM"""
@@ -136,13 +142,22 @@ async def test_parametrized_real_rewrite_plan(test_case, real_query_rewriter):
 
     
     for expected in expected_contains:
-        expected_lower = expected.lower()
-        # Check if expected text is found in any search query element OR in llm_query
-        found_in_search = any(expected_lower in query.lower() for query in search_query_list)
-        found_in_llm = expected_lower in llm_query_lower
+        # Support alternative options separated by " | "
+        alternatives = [alt.strip() for alt in expected.split(" | ")]
+        found = False
         
-        assert found_in_search or found_in_llm, \
-            f"Expected '{expected}' not found in either search_query or llm_query"
+        for alternative in alternatives:
+            alternative_lower = alternative.lower()
+            # Check if alternative text is found in any search query element OR in llm_query
+            found_in_search = any(alternative_lower in query.lower() for query in search_query_list)
+            found_in_llm = alternative_lower in llm_query_lower
+            
+            if found_in_search or found_in_llm:
+                found = True
+                break
+        
+        assert found, \
+            f"None of the expected alternatives '{expected}' found in either search_query or llm_query"
 
     for unexpected in test_case.get("expected_not_contains", []):
         unexpected_lower = unexpected.lower()

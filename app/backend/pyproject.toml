@@ -25,6 +25,7 @@ dependencies = [
     "beautifulsoup4==4.12.2",
     "langchain==0.3.25",
     "azure-ai-projects==1.0.0b11",
+    "azure-ai-agents==1.0.2",
     "azure-identity==1.23.0",
     "pytz==2025.2",
     "azure-ai-evaluation==1.8.0",

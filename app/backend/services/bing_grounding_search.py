@@ -5,7 +5,7 @@ import httpx
 import redis
 import scrapy
 from urllib.parse import urljoin
-from typing import List, Tuple, Dict, Any
+from typing import List, Tuple, Optional, Dict, Any
 import logging
 from datetime import datetime
 from langchain.prompts import PromptTemplate
@@ -41,10 +41,10 @@ You are an intelligent chatbot that provides guidance on Microsoft products in *
 - Respond in Markdown format, including 1-2 emojis to increase readability and friendliness.
 
 📌 Guidelines:  
-1. Always generate answers based on search results and avoid making unfounded assumptions.  
-2. Always include reference links and format them using the Markdown `[text](URL)` format.  
-3. When providing product price information, base it on the official website's prices and links.
-4. don't response with greeting messages, just response with the answer to the user's question.
+1. don't response with any greeting messages, just response with the answer to the user's question.
+2. Always generate answers based on search results and avoid making unfounded assumptions.  
+3. Always include reference links and format them using the Markdown `[text](URL)` format.  
+4. When providing product price information, base it on the official website's prices and links.
 """
 
 SEARCH_PROMPT_TEMPLATE = """
@@ -91,7 +91,7 @@ class BingGroundingSearch():
         self.agent_model_deployment_name = os.getenv("BING_GROUNDING_AGENT_MODEL_DEPLOYMENT_NAME")
         self.max_results = int(os.getenv("BING_GROUNDING_MAX_RESULTS", 10))
         self.market = os.getenv("BING_GROUNDING_MARKET", "ko-KR")
-        self.set_lang = os.getenv("BING_GROUNDING_SET_LANG", "ko-KR")
+        self.set_lang = os.getenv("BING_GROUNDING_SET_LANG", "ko")
         self.search_gen_agent_id_env = os.getenv("SEARCH_GEN_AGENT_ID")
         
         # Initialize credentials based on environment
@@ -131,10 +131,8 @@ class BingGroundingSearch():
                 model=self.agent_model_deployment_name,
                 name="temp-search-gen-agent",
                 instructions=SEARCH_GEN_PROMPT.format(),
-                tools=bing.definitions,
+                tools=bing.definitions
             )
-            os.environ["SEARCH_GEN_AGENT_ID"] = self.search_gen_agent.id
-            self.search_gen_agent_id_env = self.search_gen_agent.id
             logger.info(f"Created new search-gen-agent, ID: {self.search_gen_agent.id}")
             
         # Check if Redis should be used (default to False if not specified)
@@ -172,7 +170,12 @@ class BingGroundingSearch():
             
         # Cache expiration in seconds (default: 7 days)
         self.cache_expiration = int(os.getenv("REDIS_CACHE_EXPIRED_SECOND", 604800))
-        
+
+    def deleteAgent(self):
+        self.agents_client.delete_agent(self.search_gen_agent.id)
+        logger.info(f"Deleted search-gen-agent, ID: {self.search_gen_agent.id}")
+
+
     def _get_azure_credential(self):
         """
         Get appropriate Azure credential based on the environment.
@@ -213,17 +216,17 @@ class BingGroundingSearch():
         
         thread = self.agents_client.threads.create()
         logger.info(f"Created thread, ID: {thread.id}")
-        
         # Define the system prompt template using LangChain's PromptTemplate
         SEARCH_GEN_USER_PROMPT_TEMPLATE = """
+            don't say hello or any greetings, directly respond with the answer.
             please provide as rich and specific an answer and reference links as possible for `{llm_query}` of Microsoft.
-            Today is {current_date}. Results should be based on the recent information available. Speak in {locale} language.
+            Today is {current_date}. Results should be based on the recent information available. 
         """
 
         # Create a LangChain PromptTemplate
         SEARCH_GEN_USER_PROMPT = PromptTemplate(
             template=SEARCH_GEN_USER_PROMPT_TEMPLATE,
-            input_variables=["search_keyword","llm_query", "current_date", "max_results", "locale"]
+            input_variables=["search_keyword","llm_query", "current_date", "max_results"]
         )
         current_date = datetime.now(tz=self.timezone).strftime("%Y-%m-%d")
         
@@ -231,8 +234,7 @@ class BingGroundingSearch():
             search_keyword=queries["search_query"],
             current_date=current_date,
             llm_query=queries["llm_query"],
-            max_results=self.max_results,
-            locale=locale
+            max_results=self.max_results
         )
 
         # Create message to thread
@@ -261,9 +263,11 @@ class BingGroundingSearch():
             return None
 
         if stream:
-            with self.agents_client.runs.stream(thread_id=thread.id, agent_id=self.search_gen_agent.id, 
-                                                max_prompt_tokens=max_tokens, 
-                                                temperature=temperature) as stream:
+            with self.agents_client.runs.stream(
+                    thread_id=thread.id, agent_id=self.search_gen_agent.id, 
+                    max_prompt_tokens=max_tokens, 
+                    temperature=temperature
+                    ) as stream:
                 for event_type, event_data, _ in stream:
                     if isinstance(event_data, MessageDeltaChunk):
                         yield f"{event_data.text}"
@@ -345,8 +349,10 @@ class BingGroundingSearch():
                 logger.error(f"Error retrieving agent response: {str(e)}")
                 yield f"Error retrieving response: {str(e)}"
 
+
         return
 
+   
         
 class BingGroundingCrawler(SearchCrawler):
     """
@@ -421,8 +427,6 @@ class BingGroundingCrawler(SearchCrawler):
                 instructions=SEARCH_PROMPT.format(),
                 tools=bing.definitions,
             )
-            os.environ["SEARCH_AGENT_ID"] = self.search_agent.id
-            self.search_agent_id_env = self.search_agent.id
             logger.info(f"Created new search-agent, ID: {self.search_agent.id}")
 
         # Check if Redis should be used (default to False if not specified)
@@ -487,7 +491,7 @@ class BingGroundingCrawler(SearchCrawler):
             logger.info("Falling back to DefaultAzureCredential")
             return DefaultAzureCredential()
 
-    def search(self, query: str) -> List[Dict[str, str]]:
+    def search(self, query: str, locale: Optional[str] = "en-US") -> List[Dict[str, str]]:
         """
         Perform a Grounding with Bing search using Azure AI Agent.
         

@@ -271,6 +271,7 @@ class BingSearchCrawler(SearchCrawler):
             "count": self.bing_max_result,
 
             "mkt": locale,
+            "setLang": locale.split("-")[0],  # Use the primary language code
             "responseFilter": "Webpages",
         }
         if self.bing_custom_config_id:

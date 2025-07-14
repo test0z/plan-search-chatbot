@@ -73,7 +73,6 @@ class Orchestrator:
         self.query_deployment_name = settings.AZURE_OPENAI_QUERY_DEPLOYMENT_NAME
         # TODO : change the test code to use the settings
         self.query_rewriter: QueryRewriter = None
-        self.bing_grounding_search: BingGroundingSearch = None
         self.search_crawler: SearchCrawler = None
         logger.debug(f"Orchestrator initialized with Azure OpenAI deployment: {self.deployment_name}")
         
@@ -84,7 +83,8 @@ class Orchestrator:
         temperature: Optional[float] = None,
         query_rewrite: bool = True,
         search_engine: SearchEngine = SearchEngine.GOOGLE_SEARCH_CRAWLING,
-        search_crawler: SearchCrawler = GoogleSearchCrawler(),    
+        search_crawler: SearchCrawler = GoogleSearchCrawler(),
+        bing_grounding_search: BingGroundingSearch = BingGroundingSearch(),
         stream: bool = False,
         elapsed_time: bool = True,
         locale: Optional[str] = "ko-KR"
@@ -231,7 +231,7 @@ class Orchestrator:
                 if stream:
                     yield f"data: ### {LOCALE_MSG['search_and_answer']}\n\n"
 
-                search_generator = self.bing_grounding_search.search_and_generate_by_bing_grounding_ai_agent(
+                search_generator = bing_grounding_search.search_and_generate_by_bing_grounding_ai_agent(
                     queries=queries,
                     max_tokens=max_tokens,
                     temperature=temperature,

@@ -78,6 +78,35 @@ uv run pytest -v
 
 ```
 
+### Evaluation 
+
+The project includes a comprehensive evaluation suite. To run the evaluations:
+
+```bash
+uv run evals/batch_eval.py --input evals/data/RTF_queries.csv --max_concurrent 3 --max_tokens 1500 --query_rewrite true --plan_execute true --search_engine grounding_bing --limit 3
+
+```
+
+### Evaluation Script Arguments
+
+The main evaluation script (`evals/batch_eval.py`) accepts the following arguments:
+
+| Argument                | Short | Type    | Default                                         | Description                                                                                  |
+|-------------------------|-------|---------|-------------------------------------------------|----------------------------------------------------------------------------------------------|
+| `--input`               | `-i`  | string  | **Required**                                    | Path to the input CSV file containing queries.                                               |
+| `--gen_output`          | `-g`  | string  | `evals/results/generated_results_<timestamp>.jsonl`   | Output path for generated responses in JSONL format.                                         |
+| `--eval_output`         | `-e`  | string  | `evals/results/evaluation_results_<timestamp>.json`   | Output path for evaluation results in JSON format.                                           |
+| `--max_concurrent`      | `-c`  | int     | `1`                                             | Maximum number of concurrent requests during response generation.                            |
+| `--max_tokens`          | `-t`  | int     | None                                            | Maximum number of tokens for response generation.                                            |
+| `--temperature`         | `-T`  | float   | None                                            | Temperature parameter for response generation.                                               |
+| `--limit`               | `-l`  | int     | `3`                                             | Limit on the number of queries to evaluate.                                                  |
+| `--query_rewrite`       | `-q`  | bool    | `True`                                          | Enable or disable query rewriting (`true`/`false`).                                          |
+| `--plan_execute`        | `-p`  | bool    | `True`                                          | Enable or disable plan execution (`true`/`false`).                                           |
+| `--search_engine`       | `-s`  | string  | `"bing_search_crawling"`                        | Search engine to use (`bing_search_crawling`, `bing_grounding_crawling`, `grounding_bing`, `google_search_crawling`). |
+| `--interval`            | `-it` | float   | `1.0`                                           | Interval (in seconds) between query executions.                                              |
+| `--verbose`             | `-V`  | flag    | `False`                                         | Enable verbose logging for detailed output.                                                  |
+
+
 ### API Endpoints
 
 - `GET /health` - Health check endpoint

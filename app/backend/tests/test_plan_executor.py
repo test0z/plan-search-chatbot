@@ -48,16 +48,16 @@ async def test_generate_response_with_query_rewrite(plan_executor):
     
     # Mock query rewriter
     plan_executor.query_rewriter.rewrite_query.return_value = {
-        "llm_query": "Microsoft Galaxy s25 features specifications release date"
+        "llm_query": "Microsoft Surface features specifications release date"
     }
     
     # Mock planner response with proper JSON format
     planner_completion = AsyncMock()
     planner_json = json.dumps({
         "search_queries": [
-            "Microsoft Galaxy s25 specifications",
-            "Galaxy s25 features",
-            "Galaxy s25 release date"
+            "Microsoft Surface specifications",
+            "Surface features",
+            "Surface release date"
         ]
     })
     planner_completion.choices = [
@@ -66,16 +66,16 @@ async def test_generate_response_with_query_rewrite(plan_executor):
     
     # Mock search results
     plan_executor.search_crawler.search = MagicMock(return_value = [
-        {"link": "https://Microsoft.com/galaxy-s25", "snippet": "Galaxy s25 info"}
+        {"link": "https://Microsoft.com/surface", "snippet": "Surface info"}
     ])
     plan_executor.search_crawler.extract_contexts_async = AsyncMock(return_value=[
-        "The Galaxy s25 features a 6.1-inch display with 120Hz refresh rate."
+        "The Surface features a 6.1-inch display with 120Hz refresh rate."
     ])
     
     # Mock final answer response
     answer_completion = AsyncMock()
     answer_completion.choices = [
-        MagicMock(message=MagicMock(content="✨ The Microsoft Galaxy s25 is a flagship phone with...\n\n[More information](https://Microsoft.com/galaxy-s25)"))
+        MagicMock(message=MagicMock(content="✨ The Microsoft Surface is a flagship phone with...\n\n[More information](https://Microsoft.com/galaxy-s25)"))
     ]
     
     plan_executor.client.chat.completions.create.side_effect = [
@@ -143,7 +143,8 @@ async def test_generate_response_streaming(plan_executor):
         query_rewrite=False,
         search_engine=SearchEngine.GOOGLE_SEARCH_CRAWLING,
         search_crawler=plan_executor.search_crawler,
-        stream=True
+        stream=True,
+        locale="ko-KR"  # Fixed locale value
     )]
     
     # Since the exact order and content of streaming messages can vary,

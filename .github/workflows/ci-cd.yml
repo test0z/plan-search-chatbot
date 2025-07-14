@@ -39,7 +39,7 @@ jobs:
           AZURE_OPENAI_QUERY_DEPLOYMENT_NAME: ${{ secrets.AZURE_OPENAI_QUERY_DEPLOYMENT_NAME }}
         run: |
           echo "## Pytest result" >> $GITHUB_STEP_SUMMARY
-          pytest -v tests/ >> $GITHUB_STEP_SUMMARY
+          pytest -v tests/
 
       - name: Run batch evaluation
         working-directory: app/backend

@@ -25,6 +25,11 @@ jobs:
       - name: Set up virtual environment
         run: uv venv .venv --python 3.12 --seed
 
+      - name: Debug venv contents
+        run: |
+          echo "Checking .venv/bin:"
+          ls -al .venv/bin
+
       - name: Activate venv and install dependencies
         working-directory: app/backend
         run: |

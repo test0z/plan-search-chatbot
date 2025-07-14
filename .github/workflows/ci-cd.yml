@@ -19,6 +19,13 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Login to Azure using OIDC
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
       - name: Install uv
         run: pip install uv
 
@@ -183,10 +190,10 @@ jobs:
       contents: read
 
     env:
-      RG_NAME: general-inquiry-rg
+      RG_NAME: plan-search-rg
       ACR_NAME: ${{ secrets.ACR_NAME }}
-      BACKEND_IMG: ${{ secrets.ACR_NAME }}.azurecr.io/general-inquiry-be:${{ github.sha }}
-      FRONTEND_IMG: ${{ secrets.ACR_NAME }}.azurecr.io/general-inquiry-fe:${{ github.sha }}
+      BACKEND_IMG: ${{ secrets.ACR_NAME }}.azurecr.io/plan-search-be:${{ github.sha }}
+      FRONTEND_IMG: ${{ secrets.ACR_NAME }}.azurecr.io/plan-search-fe:${{ github.sha }}
 
     steps:
       - name: Checkout code
@@ -236,7 +243,7 @@ jobs:
         run: |
           az deployment group create \
             --resource-group  ${{ env.RG_NAME }} \
-            --name            general-inquiry-deployment-${{ github.run_id }} \
+            --name            plan-search-deployment-${{ github.run_id }} \
             --template-file   infra/main.bicep \
             --parameters      @infra/main.parameters.json \
                               backendContainerImage=${{ env.BACKEND_IMG }} \

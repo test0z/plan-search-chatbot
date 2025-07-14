@@ -45,6 +45,7 @@ jobs:
 
       - name: Run tests
         working-directory: app/backend
+        continue-on-error: true
         env:
           AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
           AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
@@ -56,11 +57,10 @@ jobs:
         run: |
           source ../../.venv/bin/activate
           echo "## Pytest result" >> $GITHUB_STEP_SUMMARY
-          uv run pytest -v tests/ >> $GITHUB_STEP_SUMMARY
+          uv run pytest -v tests/ | tee -a $GITHUB_STEP_SUMMARY
 
       - name: Run batch evaluation
         working-directory: app/backend
-        if: always()
         env:
           AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
           AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}

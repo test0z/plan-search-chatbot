@@ -19,16 +19,17 @@ jobs:
         with:
           python-version: '3.12'
 
-      #- name: Install uv
-      #  run: pip install uv
+      - name: Install uv
+        run: pip install uv
 
-      #- name: Set up virtual environment
-      #  run: uv venv .venv --python 3.12 --seed
+      - name: Set up virtual environment
+        run: uv venv .venv --python 3.12 --seed
 
       - name: Activate venv and install dependencies
         working-directory: app/backend
         run: |
-          pip install -e ".[dev]"
+          source ../../.venv/bin/activate
+          uv pip install -e ".[dev]"
 
       - name: Run tests
         working-directory: app/backend
@@ -38,8 +39,11 @@ jobs:
           AZURE_OPENAI_DEPLOYMENT_NAME: ${{ secrets.AZURE_OPENAI_DEPLOYMENT_NAME }}
           AZURE_OPENAI_QUERY_DEPLOYMENT_NAME: ${{ secrets.AZURE_OPENAI_QUERY_DEPLOYMENT_NAME }}
         run: |
+          source ../../.venv/bin/activate
           echo "## Pytest result" >> $GITHUB_STEP_SUMMARY
-          pytest -v tests/
+          uv run pytest -v tests/
+
+      # uv run pytest -v tests/ >> $GITHUB_STEP_SUMMARY
 
       - name: Run batch evaluation
         working-directory: app/backend
@@ -50,14 +54,17 @@ jobs:
           AZURE_OPENAI_QUERY_DEPLOYMENT_NAME: ${{ secrets.AZURE_OPENAI_QUERY_DEPLOYMENT_NAME }}
           BING_API_KEY: ${{ secrets.BING_API_KEY }}
         run: |
+          source ../../.venv/bin/activate
           echo "## Evaluation Results" >> $GITHUB_STEP_SUMMARY
-          python evals/batch_eval.py \
+          uv run evals/batch_eval.py \
             --input evals/data/RTF_queries.csv \
             --max_concurrent 3 \
             --max_tokens 1500 \
             --temperature 0.5 \
             --query_rewrite true \
-            --plan_execute true
+            --plan_execute true \
+            --search_engine grounding_bing \
+            --limit 3
 
       - name: Parse evaluation results and add to summary
         working-directory: app/backend

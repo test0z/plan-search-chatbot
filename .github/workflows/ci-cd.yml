@@ -19,10 +19,13 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install uv
-        run: pip install uv
+      #- name: Install uv
+      #  run: pip install uv
 
-      - name: Install dependencies
+      #- name: Set up virtual environment
+      #  run: uv venv .venv --python 3.12 --seed
+
+      - name: Activate venv and install dependencies
         working-directory: app/backend
         run: |
           pip install -e ".[dev]"
@@ -37,14 +40,6 @@ jobs:
         run: |
           echo "## Pytest result" >> $GITHUB_STEP_SUMMARY
           pytest -v tests/ >> $GITHUB_STEP_SUMMARY
-
-      - name: Debug test failures
-        working-directory: app/backend
-        run: |
-          source ../../.venv/bin/activate
-          pytest -v tests/ || true
-          echo "Test logs:"
-          cat pytest.log
 
       - name: Run batch evaluation
         working-directory: app/backend
@@ -163,10 +158,6 @@ jobs:
           curl -X POST -H 'Content-type: application/json' \
                --data "{\"text\":\"🔴 *Test or Evaluation Failed*\\nBranch: ${BRANCH_REF}\\nCommit: ${COMMIT_SHA}\"}" \
                ${{ secrets.SLACK_WEBHOOK_URL }}
-
-      - name: Ensure results directory exists
-        working-directory: app/backend
-        run: mkdir -p results
 
   deploy:
     needs: run-test

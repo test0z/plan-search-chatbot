@@ -160,9 +160,9 @@ jobs:
         with:
           name: evaluation-results-${{ github.sha }}
           path: |
-            app/backend/evals/results/*.json
-            app/backend/evals/results/*.jsonl
-            app/backend/evals/results/*.html
+            app/backend/results/*.json
+            app/backend/results/*.jsonl
+            app/backend/results/*.html
           retention-days: 7
 
       - name: Notify Slack on test success

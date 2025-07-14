@@ -137,14 +137,18 @@ jobs:
         working-directory: app/backend
         if: always()
         run: |
-          cd results
-          for file in *:*; do
-            if [ -f "$file" ]; then
-              new_name=$(echo "$file" | sed 's/:/-/g')
-              echo "Renaming: $file -> $new_name"
-              mv "$file" "$new_name"
-            fi
-          done
+          if [ -d results ]; then
+            cd results
+            for file in *:*; do
+              if [ -f "$file" ]; then
+                new_name=$(echo "$file" | sed 's/:/-/g')
+                echo "Renaming: $file -> $new_name"
+                mv "$file" "$new_name"
+              fi
+            done
+          else
+            echo "No results directory found. Skipping renaming step."
+          fi
 
       - name: Upload evaluation artifacts
         uses: actions/upload-artifact@v4

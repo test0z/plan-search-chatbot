@@ -61,7 +61,8 @@ jobs:
             --max_tokens 1500 \
             --temperature 0.5 \
             --query_rewrite true \
-            --plan_execute true
+            --plan_execute true \
+            --search_engine grounding_bing
 
       - name: Parse evaluation results and add to summary
         working-directory: app/backend
@@ -85,7 +86,7 @@ jobs:
               sys.stderr.write(f'Error parsing relevance score: {e}\n')
             " 2>/dev/null || echo "0.0")
 
-            PASS_RATE=$(python3 -c "
+          PASS_RATE=$(python3 -c "
           import json
           import sys
           try:

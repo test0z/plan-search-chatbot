@@ -268,7 +268,7 @@ jobs:
             --parameters      backendContainerImage=${{ env.BACKEND_IMG }} \
                               frontendContainerImage=${{ env.FRONTEND_IMG }} \
                               acrName=${{ env.ACR_NAME }}
-            --debug
+            --no-prompt
 
       - name: Notify Slack on CD success
         if: success()

@@ -269,6 +269,7 @@ jobs:
                               backendContainerImage=${{ env.BACKEND_IMG }} \
                               frontendContainerImage=${{ env.FRONTEND_IMG }} \
                               acrName=${{ env.ACR_NAME }}
+            --verbose
 
       - name: Notify Slack on CD success
         if: success()

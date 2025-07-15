@@ -67,7 +67,7 @@ jobs:
 
           if grep -qE "tests/test_query_rewriter_integration\.py::test_parametrized_real_query_rewriter\[test_case[01]\] FAILED" test_output.log; then
             echo "⚠️ Known test failures (test_case0 or test_case1) detected"
-            echo "ALLOWED_NOTE=\\n🟡 *Note*: Allowed failure in test_case0 or test_case1" >> $GITHUB_ENV
+            echo "ALLOWED_NOTE=\n🟡 *Note*: Allowed failure in test_case0 or test_case1" >> $GITHUB_ENV
             KNOWN_FAILURE=true
           else
             echo "ALLOWED_NOTE=" >> $GITHUB_ENV

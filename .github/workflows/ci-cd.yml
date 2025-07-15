@@ -226,9 +226,9 @@ jobs:
 
     env:
       RG_NAME: plan-search-rg
-      ACR_NAME: ${{ secrets.ACR_NAME }}
-      BACKEND_IMG: ${{ secrets.ACR_NAME }}.azurecr.io/plan-search-be:${{ github.sha }}
-      FRONTEND_IMG: ${{ secrets.ACR_NAME }}.azurecr.io/plan-search-fe:${{ github.sha }}
+      ACR_NAME: pnsacr
+      BACKEND_IMG: pnsacr.azurecr.io/plan-search-be:${{ github.sha }}
+      FRONTEND_IMG: pnsacr.azurecr.io/plan-search-fe:${{ github.sha }}
 
     steps:
       - name: Checkout code
@@ -246,9 +246,6 @@ jobs:
 
       - name: Create main.parameters.json from plain secret
         run: echo '${{ secrets.MAIN_PARAMETERS_JSON }}' > infra/main.parameters.json
-
-      - name: Debug ACR_NAME
-        run: echo "ACR_NAME = ${{ secrets.ACR_NAME }}"
 
       - name: Build and push backend image
         run: |

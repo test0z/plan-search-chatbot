@@ -83,47 +83,45 @@ jobs:
             --search_engine grounding_bing \
             --limit 3
 
-      - name: Check and parse evaluation results
+      - name: Parse evaluation results and add to summary
         working-directory: app/backend
         if: always()
         id: eval_results
         run: |
-          echo "=== Checking evaluation result files ==="
-          ls -al evals/results || echo "results directory does not exist"
-
-          FILES=(evals/results/evaluation_results_*.json)
-          if [ -f "${FILES[0]}" ]; then
+          if [ -f evals/results/evaluation_results_*.json ]; then
             LATEST_RESULT=$(ls -t evals/results/evaluation_results_*.json | head -1)
             echo "Found evaluation result: $LATEST_RESULT"
 
-            RELEVANCE_SCORE=$(python3 - <<EOF
+          RELEVANCE_SCORE=$(python3 -c "
           import json
+          import sys
           try:
-              with open("${LATEST_RESULT}", "r", encoding="utf-8") as f:
+              with open('$LATEST_RESULT', 'r', encoding='utf-8') as f:
                   data = json.load(f)
-              score = data.get("metrics", {}).get("relevance.relevance", 0)
-              print(f"{score:.1f}")
-          except Exception:
-              print("0.0")
-          EOF
-          )
+              score = data.get('metrics', {}).get('relevance.relevance', 0)
+              print(f'{score:.1f}')
+          except Exception as e:
+              print('0.0')
+              sys.stderr.write(f'Error parsing relevance score: {e}\n')
+            " 2>/dev/null || echo "0.0")
 
-                      PASS_RATE=$(python3 - <<EOF
+            PASS_RATE=$(python3 -c "
           import json
+          import sys
           try:
-              with open("${LATEST_RESULT}", "r", encoding="utf-8") as f:
+              with open('$LATEST_RESULT', 'r', encoding='utf-8') as f:
                   data = json.load(f)
-              rows = data.get("rows", [])
+              rows = data.get('rows', [])
               total = len(rows)
               if total > 0:
-                  passed = sum(1 for row in rows if row.get("outputs.relevance.relevance_result") == "pass")
-                  print(f"{passed}/{total} ({passed/total*100:.1f}%)")
+                  passed = sum(1 for row in rows if row.get('outputs.relevance.relevance_result') == 'pass')
+                  print(f'{passed}/{total} ({passed/total*100:.1f}%)')
               else:
-                  print("0/0 (0.0%)")
-          except Exception:
-              print("0/0 (0.0%)")
-          EOF
-          )
+                  print('0/0 (0.0%)')
+          except Exception as e:
+              print('0/0 (0.0%)')
+              sys.stderr.write(f'Error parsing pass rate: {e}\n')
+            " 2>/dev/null || echo "0/0 (0.0%)")
 
             echo "relevance_score=$RELEVANCE_SCORE" >> $GITHUB_OUTPUT
             echo "pass_rate=$PASS_RATE" >> $GITHUB_OUTPUT
@@ -132,22 +130,28 @@ jobs:
             echo "- **Relevance Score**: $RELEVANCE_SCORE/5.0" >> $GITHUB_STEP_SUMMARY
             echo "- **Pass Rate**: $PASS_RATE" >> $GITHUB_STEP_SUMMARY
             echo "- **Result File**: $(basename $LATEST_RESULT)" >> $GITHUB_STEP_SUMMARY
-
-            cd evals/results
-            for file in *; do
-              if [ -f "$file" ]; then
-                new_name=$(echo "$file" | sed 's/:/-/g')
-                if [ "$file" != "$new_name" ]; then
-                  echo "Renaming: $file -> $new_name"
-                  mv "$file" "$new_name"
-                fi
-              fi
-            done
           else
             echo "No evaluation results found"
             echo "relevance_score=0.0" >> $GITHUB_OUTPUT
             echo "pass_rate=0/0 (0.0%)" >> $GITHUB_OUTPUT
             echo "### ⚠️ No Evaluation Results Found" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Rename files for artifact upload
+        working-directory: app/backend
+        if: always()
+        run: |
+          if [ -d evals/results ]; then
+            cd evals/results
+            for file in *:*; do
+              if [ -f "$file" ]; then
+                new_name=$(echo "$file" | sed 's/:/-/g')
+                echo "Renaming: $file -> $new_name"
+                mv "$file" "$new_name"
+              fi
+            done
+          else
+            echo "No results directory found. Skipping renaming step."
           fi
 
       - name: Upload evaluation artifacts
@@ -156,9 +160,9 @@ jobs:
         with:
           name: evaluation-results-${{ github.sha }}
           path: |
-            app/backend/results/*.json
-            app/backend/results/*.jsonl
-            app/backend/results/*.html
+            app/backend/evals/results/*.json
+            app/backend/evals/results/*.jsonl
+            app/backend/evals/results/*.html
           retention-days: 7
 
       - name: Notify Slack on test success

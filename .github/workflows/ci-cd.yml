@@ -270,7 +270,7 @@ jobs:
                               frontendContainerImage=${{ env.FRONTEND_IMG }} \
                               acrName=${{ env.ACR_NAME }} \
             --no-prompt \
-            --Debug
+            --debug 2>&1 | tee deployment.log
 
       - name: Notify Slack on CD success
         if: success()

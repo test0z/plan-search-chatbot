@@ -265,11 +265,10 @@ jobs:
             --resource-group  ${{ env.RG_NAME }} \
             --name            plan-search-deployment-${{ github.run_id }} \
             --template-file   infra/main.bicep \
-            --parameters      @infra/main.parameters.json \
-                              backendContainerImage=${{ env.BACKEND_IMG }} \
+            --parameters      backendContainerImage=${{ env.BACKEND_IMG }} \
                               frontendContainerImage=${{ env.FRONTEND_IMG }} \
                               acrName=${{ env.ACR_NAME }}
-            --verbose
+            --debug
 
       - name: Notify Slack on CD success
         if: success()

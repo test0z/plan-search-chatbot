@@ -247,6 +247,9 @@ jobs:
       - name: Create main.parameters.json from plain secret
         run: echo '${{ secrets.MAIN_PARAMETERS_JSON }}' > infra/main.parameters.json
 
+      - name: Debug ACR_NAME
+        run: echo "ACR_NAME = ${{ secrets.ACR_NAME }}"
+
       - name: Build and push backend image
         run: |
           az acr build --registry ${{ env.ACR_NAME }} \

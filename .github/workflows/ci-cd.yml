@@ -241,7 +241,7 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Debug: Show current Azure account info
+      - name: Debug Show current Azure account info
         run: az account show
 
       - name: Create backend-env.json from plain secret

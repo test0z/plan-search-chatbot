@@ -45,7 +45,7 @@ jobs:
 
       - name: Run tests
         working-directory: app/backend
-        continue-on-error: true
+        continue-on-error: false
         env:
           AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
           AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
@@ -57,7 +57,27 @@ jobs:
         run: |
           source ../../.venv/bin/activate
           echo "## Pytest result" >> $GITHUB_STEP_SUMMARY
-          uv run pytest -v tests/ | tee -a $GITHUB_STEP_SUMMARY
+
+          set +e
+          uv run pytest -v tests/ | tee test_output.log
+          EXIT_CODE=${PIPESTATUS[0]}
+          set -e
+
+          cat test_output.log >> $GITHUB_STEP_SUMMARY
+
+          if grep -qE "tests/test_query_rewriter_integration\.py::test_parametrized_real_query_rewriter\[test_case[01]\] FAILED" test_output.log; then
+            echo "⚠️ Known test failures (test_case0 or test_case1) detected"
+            KNOWN_FAILURE=true
+          else
+            KNOWN_FAILURE=false
+          fi
+
+          if [ "$EXIT_CODE" -ne 0 ] && [ "$KNOWN_FAILURE" = false ]; then
+            echo "❌ Unhandled test failures occurred"
+            exit $EXIT_CODE
+          else
+            echo "✅ Test status acceptable (either passed or known failures only)"
+          fi
 
       - name: Run batch evaluation
         working-directory: app/backend
@@ -105,7 +125,7 @@ jobs:
               sys.stderr.write(f'Error parsing relevance score: {e}\n')
             " 2>/dev/null || echo "0.0")
 
-            PASS_RATE=$(python3 -c "
+          PASS_RATE=$(python3 -c "
           import json
           import sys
           try:

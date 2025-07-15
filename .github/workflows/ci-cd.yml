@@ -192,9 +192,14 @@ jobs:
           PASS_RATE="${{ steps.eval_results.outputs.pass_rate }}"
           BRANCH_REF="${{ github.ref }}"
           COMMIT_SHA="${{ github.sha }}"
+          if grep -qE "tests/test_query_rewriter_integration\.py::test_parametrized_real_query_rewriter\[test_case[01]\] FAILED" app/backend/test_output.log; then
+            ALLOWED_NOTE="*Note*: Allowed failure in test_case0 or test_case1"
+          else
+            ALLOWED_NOTE=""
+          fi
 
           curl -X POST -H 'Content-type: application/json' \
-               --data "{\"text\":\"🟢 *Test & Evaluation Passed*\\n📊 Relevance: ${RELEVANCE_SCORE}/5.0\\n✅ Pass Rate: ${PASS_RATE}\\nBranch: ${BRANCH_REF}\\nCommit: ${COMMIT_SHA}\"}" \
+               --data "{\"text\":\"🟢 *Test & Evaluation Passed*\\n📊 Relevance: ${RELEVANCE_SCORE}/5.0\\n✅ Pass Rate: ${PASS_RATE}\\nBranch: ${BRANCH_REF}\\nCommit: ${COMMIT_SHA}\\n${ALLOWED_NOTE}\"}" \
                ${{ secrets.SLACK_WEBHOOK_URL }}
 
       - name: Notify Slack on test failure
@@ -229,10 +234,10 @@ jobs:
           git fetch origin feature/cicd-pipeline --depth=1
 
           TAG_COMMIT=$(git rev-parse ${{ github.sha }})
-          BRANCH_HEAD=$(git rev-parse origin/feature/cicd-pipeline)
+          MAIN_COMMIT=$(git rev-parse origin/feature/cicd-pipeline)
 
           echo "Tag commit   : $TAG_COMMIT"
-          echo "Branch HEAD  : $BRANCH_HEAD"
+          echo "Branch HEAD  : $MAIN_COMMIT"
           if [ "$TAG_COMMIT" != "$MAIN_COMMIT" ]; then
             echo "Tag is NOT on main HEAD. Skipping deployment."
             exit 0

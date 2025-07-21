@@ -21,7 +21,7 @@ UI_TEXT = {
     },
     "ko-KR": {
         "title": "# Microsoft Plan and Search Chat",
-        "select_agent_mode": "### 에이전트 모드 선택!!!",
+        "select_agent_mode": "### 에이전트 모드 선택!!!!!!!!!!!!",
         "query_rewrite_title": "#### 쿼리 재작성",
         "query_rewrite_desc": "GPT가 쿼리를 재작성하여 응답합니다",
         "plan_execute_title": "#### 계획 및 실행",

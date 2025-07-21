@@ -15,6 +15,16 @@ jobs:
     permissions:
       id-token: write
       contents: read
+
+    env:
+      AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
+      AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
+      AZURE_OPENAI_DEPLOYMENT_NAME: ${{ secrets.AZURE_OPENAI_DEPLOYMENT_NAME }}
+      AZURE_OPENAI_QUERY_DEPLOYMENT_NAME: ${{ secrets.AZURE_OPENAI_QUERY_DEPLOYMENT_NAME }}
+      BING_API_KEY: ${{ secrets.BING_API_KEY }}
+      BING_GROUNDING_PROJECT_ENDPOINT: ${{ secrets.BING_GROUNDING_PROJECT_ENDPOINT }}
+      BING_GROUNDING_CONNECTION_ID: ${{ secrets.BING_GROUNDING_CONNECTION_ID }}
+      BING_GROUNDING_AGENT_MODEL_DEPLOYMENT_NAME: ${{ secrets.BING_GROUNDING_AGENT_MODEL_DEPLOYMENT_NAME }}
       
     steps:
       - name: Checkout code
@@ -46,14 +56,6 @@ jobs:
 
       - name: Run tests
         working-directory: app/backend
-        env:
-          AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
-          AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
-          AZURE_OPENAI_DEPLOYMENT_NAME: ${{ secrets.AZURE_OPENAI_DEPLOYMENT_NAME }}
-          AZURE_OPENAI_QUERY_DEPLOYMENT_NAME: ${{ secrets.AZURE_OPENAI_QUERY_DEPLOYMENT_NAME }}
-          BING_GROUNDING_PROJECT_ENDPOINT: ${{ secrets.BING_GROUNDING_PROJECT_ENDPOINT }}
-          BING_GROUNDING_CONNECTION_ID: ${{ secrets.BING_GROUNDING_CONNECTION_ID }}
-          BING_GROUNDING_AGENT_MODEL_DEPLOYMENT_NAME: ${{ secrets.BING_GROUNDING_AGENT_MODEL_DEPLOYMENT_NAME }}
         run: |
           source ../../.venv/bin/activate
           echo "## Pytest result" >> $GITHUB_STEP_SUMMARY
@@ -83,15 +85,6 @@ jobs:
 
       - name: Run batch evaluation
         working-directory: app/backend
-        env:
-          AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
-          AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
-          AZURE_OPENAI_DEPLOYMENT_NAME: ${{ secrets.AZURE_OPENAI_DEPLOYMENT_NAME }}
-          AZURE_OPENAI_QUERY_DEPLOYMENT_NAME: ${{ secrets.AZURE_OPENAI_QUERY_DEPLOYMENT_NAME }}
-          BING_API_KEY: ${{ secrets.BING_API_KEY }}
-          BING_GROUNDING_PROJECT_ENDPOINT: ${{ secrets.BING_GROUNDING_PROJECT_ENDPOINT }}
-          BING_GROUNDING_CONNECTION_ID: ${{ secrets.BING_GROUNDING_CONNECTION_ID }}
-          BING_GROUNDING_AGENT_MODEL_DEPLOYMENT_NAME: ${{ secrets.BING_GROUNDING_AGENT_MODEL_DEPLOYMENT_NAME }}
         run: |
           source ../../.venv/bin/activate
           echo "## Evaluation Results" >> $GITHUB_STEP_SUMMARY

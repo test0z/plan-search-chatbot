@@ -105,3 +105,4 @@ The chatbot can guide you with product details and direct you to Microsoft.comâ€
 5. How does it ensure information accuracy?
 The chatbot pulls data from Microsoftâ€™s official web sites and uses live web search only to keep answers up to date and reliable.
 CD Test - Mon Jul 21 17:20:34 KST 2025
+CI only test - Mon Jul 21 17:54:22 KST 2025

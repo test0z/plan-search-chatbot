@@ -227,8 +227,9 @@ jobs:
     env:
       RG_NAME: plan-search-rg
       ACR_NAME: ${{ secrets.ACR_NAME }}
-      BACKEND_IMG: ${{ secrets.ACR_NAME }}.azurecr.io/plan-search-be:${{ github.ref_name }}
-      FRONTEND_IMG: ${{ secrets.ACR_NAME }}.azurecr.io/plan-search-fe:${{ github.ref_name }}
+      TAG_NAME: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || github.sha }}
+      BACKEND_IMG: ${{ secrets.ACR_NAME }}.azurecr.io/plan-search-be:${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || github.sha }}
+      FRONTEND_IMG: ${{ secrets.ACR_NAME }}.azurecr.io/plan-search-fe:${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || github.sha }}
 
     steps:
       - name: Checkout code

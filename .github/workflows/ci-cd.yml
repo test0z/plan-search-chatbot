@@ -25,7 +25,7 @@ jobs:
           python-version: '3.12'
 
       - name: Login to Azure using OIDC
-        if: !startsWith(github.ref, 'refs/tags/')
+        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
         continue-on-error: true
         id: azure_login
         uses: azure/login@v1
@@ -98,7 +98,7 @@ jobs:
         run: |
           source ../../.venv/bin/activate
           echo "## Evaluation Results" >> $GITHUB_STEP_SUMMARY
-          python evals/batch_eval.py \
+          uv run evals/batch_eval.py \
             --input evals/data/RTF_queries.csv \
             --max_concurrent 3 \
             --max_tokens 1500 \

@@ -98,15 +98,13 @@ jobs:
         run: |
           source ../../.venv/bin/activate
           echo "## Evaluation Results" >> $GITHUB_STEP_SUMMARY
-          uv run evals/batch_eval.py \
+          python evals/batch_eval.py \
             --input evals/data/RTF_queries.csv \
             --max_concurrent 3 \
             --max_tokens 1500 \
             --temperature 0.5 \
             --query_rewrite true \
-            --plan_execute true \
-            --search_engine bing_search \
-            --limit 3
+            --plan_execute true
 
       - name: Parse evaluation results and add to summary
         working-directory: app/backend

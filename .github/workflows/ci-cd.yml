@@ -25,7 +25,6 @@ jobs:
           python-version: '3.12'
 
       - name: Login to Azure using OIDC
-        continue-on-error: true
         id: azure_login
         uses: azure/login@v1
         with:
@@ -47,7 +46,6 @@ jobs:
 
       - name: Run tests
         working-directory: app/backend
-        continue-on-error: false
         env:
           AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
           AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
@@ -228,9 +226,9 @@ jobs:
     env:
       RG_NAME: plan-search-rg
       ACR_NAME: ${{ secrets.ACR_NAME }}
-      TAG_NAME: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || github.sha }}
-      BACKEND_IMG: ${{ secrets.ACR_NAME }}.azurecr.io/plan-search-be:${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || github.sha }}
-      FRONTEND_IMG: ${{ secrets.ACR_NAME }}.azurecr.io/plan-search-fe:${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || github.sha }}
+      IMAGE_TAG: ${{ github.ref_name }}
+      BACKEND_IMG: ${{ secrets.ACR_NAME }}.azurecr.io/plan-search-be:${{ github.ref_name }}
+      FRONTEND_IMG: ${{ secrets.ACR_NAME }}.azurecr.io/plan-search-fe:${{ github.ref_name }}
 
     steps:
       - name: Checkout code

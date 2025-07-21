@@ -83,8 +83,8 @@ class Orchestrator:
         temperature: Optional[float] = None,
         query_rewrite: bool = True,
         search_engine: SearchEngine = SearchEngine.GOOGLE_SEARCH_CRAWLING,
-        search_crawler: SearchCrawler = GoogleSearchCrawler(),
-        bing_grounding_search: BingGroundingSearch = BingGroundingSearch(),
+        search_crawler: SearchCrawler = None,
+        bing_grounding_search: BingGroundingSearch = None,
         stream: bool = False,
         elapsed_time: bool = True,
         locale: Optional[str] = "ko-KR"
@@ -161,6 +161,11 @@ class Orchestrator:
 
             if search_engine == SearchEngine.GOOGLE_SEARCH_CRAWLING or search_engine == SearchEngine.BING_SEARCH_CRAWLING or search_engine == SearchEngine.BING_GROUNDING_CRAWLING:
                 logger.info(f"##### Using External Search Engine ##### (queries={queries}) ")
+                
+                # Initialize search_crawler if not provided
+                if search_crawler is None:
+                    search_crawler = GoogleSearchCrawler()
+                
                 search_results = search_crawler.search(
                     queries["search_query"],
                     locale=locale,
@@ -230,6 +235,10 @@ class Orchestrator:
                 logger.info(f"##### Using Bing Grounding for search ##### (queries={queries}) ")
                 if stream:
                     yield f"data: ### {LOCALE_MSG['search_and_answer']}\n\n"
+
+                # Initialize BingGroundingSearch if not provided
+                if bing_grounding_search is None:
+                    bing_grounding_search = BingGroundingSearch()
 
                 search_generator = bing_grounding_search.search_and_generate_by_bing_grounding_ai_agent(
                     queries=queries,

@@ -25,6 +25,7 @@ jobs:
           python-version: '3.12'
 
       - name: Login to Azure using OIDC
+        if: !startsWith(github.ref, 'refs/tags/')
         continue-on-error: true
         id: azure_login
         uses: azure/login@v1
@@ -84,7 +85,6 @@ jobs:
           fi
 
       - name: Run batch evaluation
-        if: steps.azure_login.outcome == 'success'
         working-directory: app/backend
         env:
           AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
@@ -105,7 +105,7 @@ jobs:
             --temperature 0.5 \
             --query_rewrite true \
             --plan_execute true \
-            --search_engine grounding_bing \
+            --search_engine bing_search \
             --limit 3
 
       - name: Parse evaluation results and add to summary

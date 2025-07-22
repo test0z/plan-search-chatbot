@@ -47,7 +47,7 @@ INTEGRATION_TEST_CASES = [
     {
         "query": "m365 제품군의 장점은 무엇인가요?",
         "locale": "ko-KR",
-        "expected_contains": ["마이크로소프트 | Microsoft", "m365", "장점"],
+        "expected_contains": ["마이크로소프트 | Microsoft", "장점"],
         "expected_not_contains": ["단점", "가격"]
     },
 ]

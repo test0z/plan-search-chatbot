@@ -37,10 +37,9 @@ source .venv/bin/activate
    
    # Bing Search API Configuration
    BING_API_KEY=
+   BING_CUSTOM_CONFIG_ID=
    # When you use the Bing Custom Search API, you need to set the custom configuration ID.
    
-   BING_CUSTOM_CONFIG_ID=
-
    # Planner Settings
    PLANNER_MAX_PLANS=3
 

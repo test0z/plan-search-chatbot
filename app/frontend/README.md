@@ -57,7 +57,7 @@ source .venv/bin/activate
 
 ## Usage
 
-- Open your web browser and navigate to `http://localhost:7860` to access the Gradio interface.
+- Open your web browser and navigate to public URL `https://xxxxxxxxx.gradio.live` to access the Gradio interface.
 - Enter your message in the input box and click "Submit" to interact with the chatbot.
 
 ## Contributing

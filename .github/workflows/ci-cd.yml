@@ -67,9 +67,9 @@ jobs:
 
           cat test_output.log >> $GITHUB_STEP_SUMMARY
 
-          if grep -qE "tests/test_query_rewriter_integration\.py::test_parametrized_real_query_rewriter\[test_case[01]\] FAILED" test_output.log; then
-            echo "⚠️ Known test failures (test_case0 or test_case1) detected"
-            echo "ALLOWED_NOTE=\n🟡 *Note*: Allowed failure in test_case0 or test_case1" >> $GITHUB_ENV
+          if grep -qE "tests/test_query_rewriter_integration\.py::test_parametrized_real_query_rewriter\[test_case\[0[12]\]\] FAILED" test_output.log; then
+            echo "⚠️ Known test failures (test_case[01] or test_case[02]) detected"
+            echo "ALLOWED_NOTE=\n🟡 *Note*: Allowed failure in test_case[01] or test_case[02]" >> $GITHUB_ENV
             KNOWN_FAILURE=true
           else
             echo "ALLOWED_NOTE=" >> $GITHUB_ENV
@@ -186,8 +186,8 @@ jobs:
           PASS_RATE="${{ steps.eval_results.outputs.pass_rate }}"
           BRANCH_REF="${{ github.ref }}"
           COMMIT_SHA="${{ github.sha }}"
-          if grep -qE "tests/test_query_rewriter_integration\.py::test_parametrized_real_query_rewriter\[test_case[01]\] FAILED" app/backend/test_output.log; then
-            ALLOWED_NOTE="🟡 *Note*: Allowed failure in test_case0 or test_case1"
+          if grep -qE "tests/test_query_rewriter_integration\.py::test_parametrized_real_query_rewriter\[test_case\[0[12]\]\] FAILED" app/backend/test_output.log; then
+            ALLOWED_NOTE="🟡 *Note*: Allowed failure in test_case[01] or test_case[02]"
           else
             ALLOWED_NOTE=""
           fi

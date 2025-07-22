@@ -34,12 +34,24 @@ source .venv/bin/activate
    AZURE_OPENAI_API_VERSION=2023-12-01-preview
    AZURE_OPENAI_DEPLOYMENT_NAME=your-deployment-name
    AZURE_OPENAI_QUERY_DEPLOYMENT_NAME=your-query-deployment-name
+   
+   # Bing Search API Configuration
+   BING_API_KEY=
+   # When you use the Bing Custom Search API, you need to set the custom configuration ID.
+   
+   BING_CUSTOM_CONFIG_ID=
 
-   # Google Search API Configuration
-   GOOGLE_API_KEY=
-   GOOGLE_CSE_ID=
-   GOOGLE_MAX_RESULTS=10 # at most 10
+   # Planner Settings
+   PLANNER_MAX_PLANS=3
 
+   # Bing Grounding
+   # https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-agents/samples/agents_streaming/sample_agents_stream_iteration_with_bing_grounding.py
+   BING_GROUNDING_PROJECT_ENDPOINT=https://<your-ai-services-account-name>.services.ai.azure.com/api/projects/<your-project-name>
+   BING_GROUNDING_AGENT_MODEL_DEPLOYMENT_NAME=gpt-4o
+   BING_GROUNDING_CONNECTION_ID=/subscriptions/{subscription-id}/resourceGroups/{resource-group-name}/providers/Microsoft.CognitiveServices/accounts/{ai-foundry-account-name}/projects/{project-name}/connections/{connection-name}
+   BING_GROUNDING_MAX_RESULTS=5
+   SEARCH_GEN_AGENT_ID=<your-agent-id>
+   SEARCH_AGENT_ID=<your-agent-id>
 
    ```
 

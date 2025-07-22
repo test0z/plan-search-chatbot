@@ -505,7 +505,7 @@ class BingGroundingCrawler(SearchCrawler):
             logger.error("Bing Grounding credentials are missing")
             return []
 
-        thread = self.search_agent.threads.create()
+        thread = self.agents_client.threads.create()
         logger.info(f"Created thread, ID: {thread.id}")
         
         # Define the system prompt template using LangChain's PromptTemplate

@@ -15,6 +15,8 @@ uv venv .venv --python 3.12 --seed
 source .venv/bin/activate
 ```
 
+
+
 ### Installation
 
 1. Clone the repository:
@@ -23,7 +25,17 @@ source .venv/bin/activate
    cd plan-search-chatbot/app/backend
    ```
 
-2. Set up environment variables:
+2. Install backend dependencies using uv:
+    ```bash
+    uv pip install -e .
+    ```
+
+    For development dependencies:
+    ```bash
+    uv pip install -e ".[dev]"
+    ```
+
+3. Set up environment variables:
    ```bash
    cp .env.example .env
    ```
@@ -54,15 +66,25 @@ source .venv/bin/activate
 
    ```
 
-3. Install backend dependencies using uv:
-   ```bash
-   uv pip install -e .
+#### Getting BING_GROUNDING_CONNECTION_ID
+
+   To get the `BING_GROUNDING_CONNECTION_ID`, follow these steps:
+   1. Go to the Azure portal.
+   2. Navigate to your Bing Resources.
+   3. Add Grounding with Bing Search configuring resource group, name and pricing tier.
+   4. Navigate to your AI Foundry a Project > management center > Connected resources.
+   5. Add  a new connection and select the Grounding with Bing Search resource you created.
+   6. Click "Create" to create the connection.
+   7. Once created, go to the connection details.
+   8. Copy the connection ID from the URL or the details page.
    ```
+   The connection ID will look like this:
+   /subscriptions/{subscription-id}/resourceGroups/{resource-group-name}/providers/Microsoft.CognitiveServices/accounts/{ai-foundry-account-name}/projects/{project-name}/connections/{connection-name}
+   ```
+
+![grounding with Bing](../../images/grounding-bing-conn-id.png)
+
    
-   For development dependencies:
-   ```bash
-   uv pip install -e ".[dev]"
-   ```
 
 ### Running the Backend
 

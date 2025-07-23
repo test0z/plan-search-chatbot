@@ -2,10 +2,10 @@ name: Python CI/CD
 
 on:
   push:
-    branches: [ feature/cicd-pipeline ]
+    branches: [ main ]
     tags: [ '*' ]
   pull_request:
-    branches: [ feature/cicd-pipeline ]
+    branches: [ main ]
 
 jobs:
   run-test:

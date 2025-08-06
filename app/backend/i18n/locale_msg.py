@@ -20,6 +20,7 @@ LOCALE_MESSAGES = {
         "searching_YouTube": "YouTube에서 검색 중...",
         "YouTube_done": "YouTube 검색 완료.",
         "context_length": "context log는 2000자까지 지원합니다. 추가적인 정보는 검색 결과를 통해 확인해주세요.",
+        "intent_small_talk": "User Intent - 캐쥬얼 대화입니다.",
     },
     "en-US": {
         "input_needed": "Please enter your question.",
@@ -40,5 +41,6 @@ LOCALE_MESSAGES = {
         "searching_YouTube": "Searching YouTube...",
         "YouTube_done": "YouTube Search complete.",
         "context_length": "context log supports up to 2000 characters. For additional information, please refer to the search results.",
+        "intent_small_talk": "User Intent - small talk.",
     }
 }

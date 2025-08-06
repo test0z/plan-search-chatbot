@@ -427,6 +427,16 @@ class PlanSearchExecutorSKParallel:
                         intent_data_str = json.dumps(intent_data, ensure_ascii=False, indent=2) if intent_data else "{}"
                         yield f"data: {self.send_step_with_code(LOCALE_MSG['analyze_complete'], intent_data_str)}\n\n"
                     
+                    if user_intent == "small_talk":
+                        # Small talk does not require search
+                        planning = False
+                        include_web_search = False
+                        include_ytb_search = False
+                        include_mcp_server = False
+
+                        if stream:
+                            yield f"data: ### {LOCALE_MSG['intent_small_talk']}\n\n"
+                    
                     if planning:
                         
                         if stream:
@@ -496,7 +506,8 @@ class PlanSearchExecutorSKParallel:
                     verbose=verbose,
                     LOCALE_MSG=LOCALE_MSG,
                     include_web_search=include_web_search,
-                    include_mcp_server=include_ytb_search,  # Use include_ytb_search instead of include_mcp_server
+                    include_ytb_search=include_ytb_search,  # Use include_ytb_search instead of include_mcp_server
+                    include_mcp_server=include_mcp_server,
                     status_callback=status_callback
                 )
             )

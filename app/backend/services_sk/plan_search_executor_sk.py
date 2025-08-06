@@ -211,6 +211,15 @@ class PlanSearchExecutorSK:
                         intent_data_str = json.dumps(intent_data, ensure_ascii=False, indent=2) if intent_data else "{}"
                         yield f"data: {self.send_step_with_code(LOCALE_MSG['analyze_complete'], intent_data_str)}\n\n"
 
+                    if user_intent == "small_talk":
+                        # Small talk does not require search
+                        planning = False
+                        include_web_search = False
+                        include_ytb_search = False
+
+                        if stream:
+                            yield f"data: ### {LOCALE_MSG['intent_small_talk']}\n\n"
+                        
                     if planning:
                     
                         if stream:

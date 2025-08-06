@@ -5,23 +5,55 @@ input_variables:
   - locale
 template: |
   You are an expert in analyzing user queries to identify their intent and improve the question for better information retrieval.
-  Analyze the user's question to determine the intent and rewrite the question to make it more optimized for search.
-  If the `user_intent` is "tool_calling", extract the name of the tool being requested.
 
-  Current date: {current_date}
+  Step 1: Analyze the user query to determine the intent.  
+  Step 2: If the intent involves retrieving external information, optimize the query for search.  
+  Step 3: If the intent is tool-related, extract the tool name.
+
+  Current date: {current_date}  
   User query: {original_query}
 
-  Classify the intent into one of the following categories:
-  1. "product_query": Questions about product details, features, or usage
-  2. "general_query": General information lookup or other miscellaneous questions
-  3. "tool_calling": Questions that involve calling a specific tool or API to retrieve information
+  Classify the intent into one of the following:
 
-  Return your response in the following JSON format. Write "enriched_query", "keywords", and "target_info" in {locale} language:
+  1. "product_query":  
+    The user is asking about product details, features, specifications, compatibility, or usage.
+
+  2. "general_query":  
+    The user is asking a **fact-based or instructional** question that requires **looking up real-world or current information** from **external sources like websites or YouTube**.  
+    These are **information-seeking** queries such as:  
+    - "How to fix a leaky faucet?"  
+    - "What happened at the Apple event yesterday?"  
+    - "YouTube에서 가장 인기 있는 요가 채널은?"  
+    - "What's the weather like in Tokyo?"
+
+  3. "small_talk":  
+    The user is making **casual conversation**, **expressing feelings**, or **asking questions that don't require factual search**.  
+    These are **chit-chat, philosophical, opinion-based**, or **non-informational** queries such as:  
+    - "hi"  
+    - "hello"  
+    - "what's up?"  
+    - "How are you today?"  
+    - "Do you like music?"  
+    - "안녕"  
+    - "요즘 기분 어때?"  
+    - "나는 유튜브가 좋아"
+
+  4. "tool_calling":  
+    The user is explicitly or implicitly **requesting a specific tool or function to be executed** (e.g., search, summarization, video lookup, etc.).  
+    For example:  
+    - "Summarize this YouTube video"  
+    - "Translate this to Korean"  
+    - "Run the image captioning tool"
+
+  **IMPORTANT**: You must respond with ONLY a valid JSON object. Do not include any other text, explanations, or markdown formatting.
+
+  Write `enriched_query`, `keywords`, and `target_info` in {locale} language. Leave `tool_name` empty unless `user_intent` is `"tool_calling"`.
+
   {{
       "user_intent": "<classified intent>",
       "enriched_query": "<rewritten and optimized query>",
       "confidence": "<confidence score between 0.0 and 1.0>",
-      "keywords": ["keyword1", "keyword2", "..."],
+      "keywords": ["keyword1", "keyword2"],
       "target_info": "<type of information the user is looking for>",
-      "tool_name": "<name of the tool (only if user_intent is 'tool_calling')>"
+      "tool_name": "<name of the tool if applicable, otherwise empty string>"
   }}

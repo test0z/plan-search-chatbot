@@ -89,7 +89,7 @@ class IntentPlanPlugin:
                     )},
                     {"role": "user", "content": original_query}
                 ],
-                temperature=temperature,
+                temperature=0.2,
                 max_tokens=500,
                 response_format={"type": "json_object"},
             )
@@ -105,7 +105,7 @@ class IntentPlanPlugin:
                     raise ValueError(f"API response missing required key: {key}")
             
             # Validate intent value
-            valid_intents = ["risk_analysis", "market_research", "general_query"]
+            valid_intents = ["product_query", "general_query", "small_talk", "tool_calling"]
             if result["user_intent"] not in valid_intents:
                 logger.warning(f"Invalid intent detected: {result['user_intent']}, defaulting to general_query")
                 result["user_intent"] = "general_query"

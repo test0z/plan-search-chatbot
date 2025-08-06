@@ -8,6 +8,7 @@ dependencies = [
     "requests==2.32.4",
     "fastapi>=0.103.0",
     "python-dotenv==1.1.0",
+    "chainlit==2.6.3",
     "gradio==5.33.1",
 ]
 

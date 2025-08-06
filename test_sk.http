@@ -1,0 +1,86 @@
+### Plan Search API with Bing Search API Test
+curl -X POST http://localhost:8000/plan_search \
+  -H "Content-Type: application/json" \
+  -d '{
+  "messages": [
+    {
+      "role": "user",
+      "content": "마이크로소프트의 office제품에 대해 설명해주세요"
+    }
+  ],
+  "max_tokens": 2000,
+  "temperature": 0.3,
+  "stream": true,
+  "query_rewrite": true,
+  "search_engine": "bing_search_crawling",
+  "locale": "en-US",
+  "include_web_search": true,
+  "include_mcp_server": false,
+  "verbose": true
+}' --no-buffer
+
+### Plan Search with Grounding with Bing API Test
+curl -X POST http://localhost:8000/plan_search \
+  -H "Content-Type: application/json" \
+  -d '{
+  "messages": [
+    {
+      "role": "user",
+      "content": "마이크로소프트의 surface제품에 대해 설명해주세요"
+    }
+  ],
+  "max_tokens": 2000,
+  "temperature": 0.3,
+  "stream": true,
+  "query_rewrite": true,
+  "search_engine": "grounding_bing",
+  "locale": "en-US",
+  "include_web_search": true,
+  "include_mcp_server": false,
+  "verbose": true
+}' --no-buffer
+
+
+### Plan Search API with MCP Test
+curl -X POST http://localhost:8000/plan_search \
+  -H "Content-Type: application/json" \
+  -d '{
+  "messages": [
+    {
+      "role": "user",
+      "content": "Azure"
+    }
+  ],
+  "max_tokens": 2000,
+  "temperature": 0.3,
+  "stream": true,
+  "query_rewrite": true,
+  "search_engine": "bing_search_crawling",
+  "locale": "ko-KR",
+  "include_web_search": false,
+  "include_ytb_search": true,
+  "include_mcp_server": true,
+  "verbose": true
+}' --no-buffer
+
+### Plan Search API with MCP Test
+curl -X POST http://localhost:8000/plan_search \
+  -H "Content-Type: application/json" \
+  -d '{
+  "messages": [
+    {
+      "role": "user",
+      "content": "List all of the resource groups in my subscription"
+    }
+  ],
+  "max_tokens": 2000,
+  "temperature": 0.3,
+  "stream": true,
+  "query_rewrite": true,
+  "search_engine": "bing_search_crawling",
+  "locale": "ko-KR",
+  "include_web_search": false,
+  "include_mcp_server": true,
+  "verbose": true
+}' --no-buffer
+

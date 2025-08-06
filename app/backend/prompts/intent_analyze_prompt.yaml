@@ -1,0 +1,27 @@
+_type: prompt
+input_variables:
+  - current_date
+  - original_query
+  - locale
+template: |
+  You are an expert in analyzing user queries to identify their intent and improve the question for better information retrieval.
+  Analyze the user's question to determine the intent and rewrite the question to make it more optimized for search.
+  If the `user_intent` is "tool_calling", extract the name of the tool being requested.
+
+  Current date: {current_date}
+  User query: {original_query}
+
+  Classify the intent into one of the following categories:
+  1. "product_query": Questions about product details, features, or usage
+  2. "general_query": General information lookup or other miscellaneous questions
+  3. "tool_calling": Questions that involve calling a specific tool or API to retrieve information
+
+  Return your response in the following JSON format. Write "enriched_query", "keywords", and "target_info" in {locale} language:
+  {{
+      "user_intent": "<classified intent>",
+      "enriched_query": "<rewritten and optimized query>",
+      "confidence": "<confidence score between 0.0 and 1.0>",
+      "keywords": ["keyword1", "keyword2", "..."],
+      "target_info": "<type of information the user is looking for>",
+      "tool_name": "<name of the tool (only if user_intent is 'tool_calling')>"
+  }}

@@ -439,8 +439,8 @@ def main():
                 
                 # Plan & Execute Card
                 with gr.Column(scale=1, elem_classes="mode-card"):
-                    plan_execute_title_md = gr.Markdown(UI_TEXT["ko-KR"]["plan_execute_title"])
-                    plan_execute_desc_md = gr.Markdown(UI_TEXT["ko-KR"]["plan_execute_desc"])
+                    plan_execute_title_md = gr.Markdown(UI_TEXT["ko-KR"]["planning_title"])
+                    plan_execute_desc_md = gr.Markdown(UI_TEXT["ko-KR"]["planning_desc"])
                     plan_execute_switch = gr.Checkbox(
                         value=True,  # Set to True by default
                         label=UI_TEXT["en-US"]["enable_label"],

@@ -19,6 +19,7 @@ Content-Type: application/json
     ],
     "stream": true, 
     "search_engine": "google_search_crawling"
+    "search_engine": "google_search_crawling"
 }
 
 ## this tests is working as a stream mode in a bash

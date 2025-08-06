@@ -74,6 +74,7 @@ class Orchestrator:
         # TODO : change the test code to use the settings
         self.query_rewriter: QueryRewriter = None
         self.search_crawler: SearchCrawler = None
+        self.bing_grounding_search: BingGroundingSearch = None
         logger.debug(f"Orchestrator initialized with Azure OpenAI deployment: {self.deployment_name}")
         
     async def generate_response(

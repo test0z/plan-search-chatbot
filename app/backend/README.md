@@ -62,6 +62,8 @@ source .venv/bin/activate
    BING_GROUNDING_CONNECTION_ID=/subscriptions/{subscription-id}/resourceGroups/{resource-group-name}/providers/Microsoft.CognitiveServices/accounts/{ai-foundry-account-name}/projects/{project-name}/connections/{connection-name}
    BING_GROUNDING_MAX_RESULTS=5
 
+   # YouTube Data API Configuration
+   YOUTUBE_API_KEY=your-youtube-api-key-here
 
    ```
 

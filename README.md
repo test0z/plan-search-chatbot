@@ -1,7 +1,38 @@
 # plan-search-chatbot
 This project is an assetized version of the general-inquiry-chatbot, originally developed by [@HakjunMIN](https://github.com/HakjunMIN), [@hyogrin](https://github.com/hyogrin) and [@YOONPYO](https://github.com/YOONPYOGitHub). It has been further developed to support users in exploring Microsoft products, comparing options, and receiving real-time assistance via a conversational interface.
 
-![plan-search-chatbot](images/plan-search-ui-design1.png)
+## 🔥 New Features (6-Aug-2025)
+I am excited to introduce several enhancements that significantly improve the functionality, flexibility, and developer experience of this project.
+
+### 🧠 Semantic Kernel Integration
+- The chatbot now incorporates [Semantic Kernel](https://github.com/microsoft/semantic-kernel), Microsoft's open-source orchestration SDK for LLM apps.
+- Enables more intelligent planning and contextual understanding, resulting in richer, more accurate responses.
+- Supports planner-based execution and native function calling for complex multi-step tasks.
+
+### ⚡️ Parallel Agentic Flow
+- Added support for **parallel processing** within agentic flows.
+- Improves performance and responsiveness during multi-function execution.
+- Ideal for scenarios requiring simultaneous API calls or concurrent reasoning steps.
+
+### 📺 YouTube MCP Server Integration
+- Supports both **MCP server** and **native API**-based function calling for YouTube data access.
+- Enables seamless retrieval of YouTube content via pre-configured MCP endpoints or direct API calls.
+
+### 🔍 Verbose Model Logging
+- Introduced **verbose mode** for improved debugging and traceability.
+- Logs include:
+  - Raw input/output data
+  - API call history
+  - Function invocation details
+- Helps track down issues and optimize prompt behavior.
+
+### 🎨 UI Framework Selection
+- Now supports both of the following UI frameworks:
+  - [Chainlit](https://github.com/Chainlit/chainlit) – great for interactive prototyping
+  - [Gradio](https://github.com/gradio-app/gradio) – ideal for building and sharing web-based demos
+- Choose the interface that best fits your development and deployment needs.
+
+![plan-search-chatbot](images/plan-search-chatbot-main.png)
 
 # Project Structure
 

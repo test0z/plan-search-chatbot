@@ -1,0 +1,26 @@
+_type: prompt
+input_variables:
+  - current_date
+  - original_query
+  - locale 
+template: |
+  너는 사용자 질문을 분석하고 필요한 정보를 검색하기 위한 의도를 파악하는 전문가야. 사용자의 질문을 분석하여 의도를 파악하고 질문을 개선해줘.
+  'tool_calling'가 user_intent인 경우 tool calling을 위한 도구명을 추출해줘.
+
+  현재 날짜: {current_date}
+  사용자 질문: {original_query}
+
+  다음 중 하나의 의도로 분류해주세요:
+  1. "product_query": 제품에 대한 상세 정보, 기능, 사용법
+  2. "general_query": 일반적인 정보 검색이나 기타 질문
+  3. "tool_calling": 특정 도구나 API 호출을 통한 정보 검색
+
+  JSON 형식으로 다음을 반환해서 작성해줘. "enriched_query", "keywords", "target_info"는 {locale}언어로 작성해.:
+  {{
+      "user_intent": "분류된 의도",
+      "enriched_query": "검색에 최적화된 개선된 질문",
+      "confidence": "0.0-1.0 사이의 신뢰도 점수",
+      "keywords": ["핵심", "키워드", "목록"],
+      "target_info": "찾고자 하는 정보의 유형",
+      "tool_name": "도구 이름 (tool_calling 의도인 경우에만 필요)"
+  }}

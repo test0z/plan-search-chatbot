@@ -233,7 +233,7 @@ resource frontendApp 'Microsoft.App/containerApps@2025-02-02-preview' = {
       ]
       scale: {
         minReplicas: 1
-        maxReplicas: 4
+        maxReplicas: 1
       }
     }
   }

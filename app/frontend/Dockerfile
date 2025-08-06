@@ -50,7 +50,6 @@ else\n\
     echo "Using provided CHAINLIT_AUTH_SECRET"\n\
 fi\n\
 \n\
-
 # 백엔드 연결 확인\n\
 if [ ! -z "$SK_API_URL" ]; then\n\
     echo "Backend API URL: $SK_API_URL"\n\

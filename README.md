@@ -18,7 +18,7 @@ I am excited to introduce several enhancements that significantly improve the fu
 - Supports both **MCP server** and **native API**-based function calling for YouTube data access.
 - Enables seamless retrieval of YouTube content via pre-configured MCP endpoints or direct API calls.
 
-### 🔍 Verbose Model Logging
+### 🔍 Verbose Mode
 - Introduced **verbose mode** for improved debugging and traceability.
 - Logs include:
   - Raw input/output data

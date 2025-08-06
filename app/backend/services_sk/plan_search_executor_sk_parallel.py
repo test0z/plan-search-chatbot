@@ -398,6 +398,7 @@ class PlanSearchExecutorSKParallel:
             enriched_query = last_user_message
             search_queries = []
             user_intent = "general_query"  # Initialize user_intent
+            intent_data = {}
             
             if query_rewrite:
                 try:
@@ -407,6 +408,7 @@ class PlanSearchExecutorSKParallel:
                         self.kernel,
                         KernelArguments(
                             original_query=last_user_message,
+                            current_date=current_date,  # 추가: current_date 파라미터
                             locale=locale,
                             temperature=0.3
                         )
@@ -449,6 +451,7 @@ class PlanSearchExecutorSKParallel:
                             KernelArguments(
                                 user_intent=user_intent,
                                 enriched_query=enriched_query,
+                                current_date=current_date,  # 추가: current_date 파라미터 (필요시)
                                 locale=locale,
                                 temperature=0.7,
                             )

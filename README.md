@@ -34,6 +34,46 @@ I am excited to introduce several enhancements that significantly improve the fu
 
 ![plan-search-chatbot](images/plan-search-chatbot-main.png)
 
+# ✨ Feature Highlights (7-Aug-2025)
+Here are several powerful features included in this project that enhance search-driven LLM applications through modular design, evaluation support, and flexible UI options.
+
+### 🔁 Query Rewrite
+- A module that reformulates user queries to improve response quality and informativeness.  
+- Helps the LLM better understand the user’s intent and generate more accurate, context-aware answers.
+
+### 🧭 Plan & Execute
+- Implements planning techniques to **enrich search keywords** based on the original query context.  
+- Automatically decomposes **complex questions into sub-queries**, searches them in parallel, and returns synthesized context to the chatbot.  
+- Boosts performance in multi-intent or multi-hop question scenarios.
+
+### 📊 Batch Evaluation
+- Includes a **CLI-based batch evaluation** module.  
+- Enables testing of chatbot response quality using a predefined Q&A dataset.  
+- Automatically generates **evaluation reports** for quick quality checks and comparisons.
+
+### 🔄 CI/CD with GitHub Actions
+- Demonstrates an end-to-end CI/CD pipeline that includes:  
+  - Unit testing with `pytest`  
+  - Batch evaluation execution  
+  - HTML summary report generation  
+  - **Slack notifications** for build/test results  
+- Promotes reliable, automated deployment and testing workflows.
+
+### 🖼️ Frontend with Gradio
+- Provides a lightweight [Gradio](https://github.com/gradio-app/gradio) UI for user interaction.  
+- Features include:  
+  - Korean/English language toggle  
+  - Query type–based **reference question generation**  
+  - Switchable `Query Rewrite` and `Plan & Execute` functionality for quick testing and demos
+
+### 🌐 Multiple Web Search Options
+- Supports both:  
+  - **Bing Search API**  
+  - **Grounding with Bing Search**  
+- Allows flexible configuration depending on customer preference or available environments.
+
+
+
 # Project Structure
 
 The project is organized into two main parts:

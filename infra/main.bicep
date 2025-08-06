@@ -126,7 +126,7 @@ resource backendApp 'Microsoft.App/containerApps@2025-02-02-preview' = {
         }
       ]
       scale: {
-        minReplicas: 1
+        minReplicas: 2
         maxReplicas: 3
       }
     }
@@ -152,6 +152,7 @@ resource frontendApp 'Microsoft.App/containerApps@2025-02-02-preview' = {
         external: true
         targetPort: 7860
         allowInsecure: false
+        transport: 'http'
         traffic: [
           {
             latestRevision: true
@@ -174,6 +175,14 @@ resource frontendApp 'Microsoft.App/containerApps@2025-02-02-preview' = {
           name: 'auth-password'
           value: string(backendEnvVars.AUTH_PASSWORD)
         }
+        {
+          name: 'chainlit-auth-secret'
+          value: string(backendEnvVars.CHAINLIT_AUTH_SECRET)
+        }
+        {
+          name: 'youtube-api-key'
+          value: string(backendEnvVars.YOUTUBE_API_KEY)
+        }
       ]      
     }
     template: {
@@ -183,10 +192,18 @@ resource frontendApp 'Microsoft.App/containerApps@2025-02-02-preview' = {
           name: 'frontend'
           image: frontendContainerImage
           resources: {
-            cpu: json('1')
-            memory: '2Gi'
+            cpu: json('2')
+            memory: '4Gi'
           }
           env: [
+            {
+              name: 'SK_API_URL'
+              value: 'https://${backendApp.properties.configuration.ingress.fqdn}/plan_search'
+            }
+            {
+              name: 'SK_API_URL_PARALLEL'
+              value: 'https://${backendApp.properties.configuration.ingress.fqdn}/plan_search_parallel'
+            }
             {
               name: 'API_URL'
               value: 'https://${backendApp.properties.configuration.ingress.fqdn}/chat'
@@ -203,12 +220,20 @@ resource frontendApp 'Microsoft.App/containerApps@2025-02-02-preview' = {
               name: 'AUTH_PASSWORD'
               secretRef: 'auth-password'
             }
+            {
+              name: 'CHAINLIT_AUTH_SECRET'
+              secretRef: 'chainlit-auth-secret'
+            }
+            {
+              name: 'YOUTUBE_API_KEY'
+              secretRef: 'youtube-api-key'
+            }
           ]
         }
       ]
       scale: {
         minReplicas: 1
-        maxReplicas: 2
+        maxReplicas: 4
       }
     }
   }

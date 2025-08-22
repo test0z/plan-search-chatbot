@@ -1,14 +1,16 @@
-import pytest
-import sys
 import asyncio
 import logging
+import sys
 from pathlib import Path
+
+import pytest
+import pytest_asyncio
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from services.query_rewriter import QueryRewriter
-from openai import AsyncAzureOpenAI
 from config.config import Settings
+from openai import AsyncAzureOpenAI
+from services.query_rewriter import QueryRewriter
 
 pytest_plugins = ["pytest_asyncio"]
 
@@ -57,9 +59,13 @@ def settings():
     return Settings()
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def real_query_rewriter(settings):
-    """Create QueryRewriter with real OpenAI client for integration tests."""
+    """Create QueryRewriter with real OpenAI client for integration tests.
+
+    The fixture runs in pytest-asyncio's event loop so we can await client.close()
+    safely in the teardown section.
+    """
     client = AsyncAzureOpenAI(
         api_key=settings.AZURE_OPENAI_API_KEY,
         api_version=settings.AZURE_OPENAI_API_VERSION,
@@ -68,10 +74,11 @@ async def real_query_rewriter(settings):
 
     query_rewriter = QueryRewriter(client=client, settings=settings)
 
-    yield query_rewriter
-
-    # Properly close the client after tests
-    await client.close()
+    try:
+        yield query_rewriter
+    finally:
+        # Close the async client on the same event loop used by the test
+        await client.close()
 
 
 @pytest.mark.parametrize("test_case", INTEGRATION_TEST_CASES)
@@ -83,6 +90,14 @@ async def test_parametrized_real_query_rewriter(test_case, real_query_rewriter):
     expected_contains = test_case["expected_contains"]
 
     logger.info(f"Running parametrized integration test for query: {query}")
+
+    # Support environments where the fixture may be an async generator
+    import inspect
+
+    if inspect.isasyncgen(real_query_rewriter):
+        # advance to the first yield to get the actual instance; do not close the
+        # generator so pytest can run the teardown/finalizer later.
+        real_query_rewriter = await real_query_rewriter.__anext__()
 
     result = await real_query_rewriter.rewrite_query(query, locale=locale)
 
@@ -134,6 +149,12 @@ async def test_parametrized_real_rewrite_plan(test_case, real_query_rewriter):
     expected_contains = test_case["expected_contains"]
 
     logger.info(f"Running parametrized integration test for query: {query}")
+
+    # Support environments where the fixture may be an async generator
+    import inspect
+
+    if inspect.isasyncgen(real_query_rewriter):
+        real_query_rewriter = await real_query_rewriter.__anext__()
 
     result = await real_query_rewriter.rewrite_plan_query(query, locale=locale)
 

@@ -1,15 +1,18 @@
 import logging
 from datetime import datetime
 from typing import AsyncGenerator, List, Optional
-import pytz 
+import pytz
 from config.config import Settings
 from langchain_core.prompts import PromptTemplate
 from model.models import ChatMessage
 from openai import AsyncAzureOpenAI
 from utils.enum import SearchEngine
 import json
-from services.bing_grounding_search import BingGroundingSearch, BingGroundingCrawler
-from services.search_crawler import SearchCrawler, GoogleSearchCrawler, BingSearchCrawler
+from services.bing_grounding_search import BingGroundingSearch
+from services.search_crawler import (
+    SearchCrawler,
+    GoogleSearchCrawler,
+)
 from services.query_rewriter import QueryRewriter
 from i18n.locale_msg import LOCALE_MESSAGES
 
@@ -44,30 +47,28 @@ PROMPT_TEMPLATE = """
 PROMPT = PromptTemplate(
     template=PROMPT_TEMPLATE,
     input_variables=["date", "contexts", "question"],
-    optional_variables=["url_citation", "locale"]
+    optional_variables=["url_citation", "locale"],
 )
 
 if not all(var in PROMPT.input_variables for var in ["date", "contexts", "question"]):
-    raise ValueError("Loaded prompt does not contain required input variables")        
+    raise ValueError("Loaded prompt does not contain required input variables")
+
 
 class Orchestrator:
     """Service for orchestrating the chatbot pipeline, including Azure OpenAI interactions"""
-    
-    def __init__(
-        self, 
-        settings: Settings
-    ):
+
+    def __init__(self, settings: Settings):
         self.settings = settings
         if isinstance(settings.TIME_ZONE, str):
             self.timezone = pytz.timezone(settings.TIME_ZONE)
         else:
             self.timezone = pytz.UTC
-            
+
         #
         self.client = AsyncAzureOpenAI(
             api_key=settings.AZURE_OPENAI_API_KEY,
             api_version=settings.AZURE_OPENAI_API_VERSION,
-            azure_endpoint=settings.AZURE_OPENAI_ENDPOINT
+            azure_endpoint=settings.AZURE_OPENAI_ENDPOINT,
         )
         self.deployment_name = settings.AZURE_OPENAI_DEPLOYMENT_NAME
         self.query_deployment_name = settings.AZURE_OPENAI_QUERY_DEPLOYMENT_NAME
@@ -75,10 +76,12 @@ class Orchestrator:
         self.query_rewriter: QueryRewriter = None
         self.search_crawler: SearchCrawler = None
         self.bing_grounding_search: BingGroundingSearch = None
-        logger.debug(f"Orchestrator initialized with Azure OpenAI deployment: {self.deployment_name}")
-        
+        logger.debug(
+            f"Orchestrator initialized with Azure OpenAI deployment: {self.deployment_name}"
+        )
+
     async def generate_response(
-        self, 
+        self,
         messages: List[ChatMessage],
         max_tokens: Optional[int] = None,
         temperature: Optional[float] = None,
@@ -88,11 +91,11 @@ class Orchestrator:
         bing_grounding_search: BingGroundingSearch = BingGroundingSearch(),
         stream: bool = False,
         elapsed_time: bool = True,
-        locale: Optional[str] = "ko-KR"
+        locale: Optional[str] = "ko-KR",
     ) -> AsyncGenerator[str, None]:
         """
         Generate a chat response using Azure OpenAI, with optional streaming support.
-        
+
         Args:
             messages: List of chat messages in the conversation
             max_tokens: Maximum tokens to generate
@@ -100,7 +103,7 @@ class Orchestrator:
             query_rewrite: Whether to rewrite the query for better results
             search_engine: Search engine to use for RAG
             stream: Whether to stream the response or return it all at once
-            
+
         Yields:
             Response text. For non-streaming requests, yields exactly once.
             For streaming requests, yields multiple chunks.
@@ -110,12 +113,18 @@ class Orchestrator:
             if elapsed_time:
                 logger.info(f"Starting response generation at {start_time}")
                 ttft_time = None
-            
-            messages_dict = [{"role": msg.role, "content": msg.content} for msg in messages]
+
+            messages_dict = [
+                {"role": msg.role, "content": msg.content} for msg in messages
+            ]
             current_date = datetime.now(tz=self.timezone).strftime("%Y-%m-%d")
             last_user_message = next(
-                (msg["content"] for msg in reversed(messages_dict) if msg["role"] == "user"), 
-                "No question provided"
+                (
+                    msg["content"]
+                    for msg in reversed(messages_dict)
+                    if msg["role"] == "user"
+                ),
+                "No question provided",
             )
 
             LOCALE_MSG = LOCALE_MESSAGES.get(locale, LOCALE_MESSAGES["ko-KR"])
@@ -123,80 +132,95 @@ class Orchestrator:
             if last_user_message == "No question provided":
                 yield LOCALE_MSG["input_needed"]
                 return
-            
+
             contexts_text = "No search results available"
-            
+
             system_content = PROMPT.format(
                 date=current_date,
                 contexts=contexts_text,
                 question=last_user_message,
                 url_citation=[],
-                locale=locale
+                locale=locale,
             )
 
             messages_dict.insert(0, {"role": "system", "content": system_content})
 
             if max_tokens is None:
                 max_tokens = self.settings.MAX_TOKENS
-                
+
             if temperature is None:
                 temperature = self.settings.DEFAULT_TEMPERATURE
             final_messages = messages_dict
-            
+
             if stream:
                 yield f"data: ### {LOCALE_MSG['analyzing']}\n\n"
 
             if query_rewrite and self.query_rewriter:
                 if last_user_message != "No question provided":
-                    queries = await self.query_rewriter.rewrite_query(last_user_message, locale=locale)
+                    queries = await self.query_rewriter.rewrite_query(
+                        last_user_message, locale=locale
+                    )
                     if stream:
                         yield f"data: ### {LOCALE_MSG['rewrite_complete']}: {queries['llm_query']}\n\n"
             else:
                 queries = {
                     "llm_query": last_user_message,
-                    "search_query": last_user_message
+                    "search_query": last_user_message,
                 }
 
             if stream:
                 yield f"data: ### {LOCALE_MSG['searching']}\n\n"
 
-            if search_engine == SearchEngine.GOOGLE_SEARCH_CRAWLING or search_engine == SearchEngine.BING_SEARCH_CRAWLING or search_engine == SearchEngine.BING_GROUNDING_CRAWLING:
-                logger.info(f"##### Using External Search Engine ##### (queries={queries}) ")
+            if (
+                search_engine == SearchEngine.GOOGLE_SEARCH_CRAWLING
+                or search_engine == SearchEngine.BING_SEARCH_CRAWLING
+                or search_engine == SearchEngine.BING_GROUNDING_CRAWLING
+            ):
+                logger.info(
+                    f"##### Using External Search Engine ##### (queries={queries}) "
+                )
                 search_results = search_crawler.search(
                     queries["search_query"],
                     locale=locale,
                 )
-                
+
                 logger.info(f"Search results: {search_results}")
-                
+
                 if search_results:
-                    url_snippet_tuples = [(r["link"], r["snippet"]) for r in search_results]
+                    url_snippet_tuples = [
+                        (r["link"], r["snippet"]) for r in search_results
+                    ]
 
                     if stream:
                         yield f"data: ### {LOCALE_MSG['searching']}\n\n"
 
-                    contexts = await search_crawler.extract_contexts_async(url_snippet_tuples)
+                    contexts = await search_crawler.extract_contexts_async(
+                        url_snippet_tuples
+                    )
 
                     if stream:
                         yield f"data: ### {LOCALE_MSG['preparing_response']}\n\n"
                     logger.debug(f"url_snippet_tuples: {url_snippet_tuples}")
                     contexts_text = "\n\n".join(contexts)
-                    
+
                     system_content = PROMPT.format(
                         date=current_date,
                         contexts=contexts_text,
                         question=queries["llm_query"],
                         url_citation=json.dumps(url_snippet_tuples, ensure_ascii=False),
-                        locale=locale
+                        locale=locale,
                     )
-                    
+
                     final_messages[0]["content"] = system_content
 
                     for i, msg in enumerate(final_messages):
-                        if msg["role"] == "user" and msg["content"] == last_user_message:
+                        if (
+                            msg["role"] == "user"
+                            and msg["content"] == last_user_message
+                        ):
                             final_messages[i]["content"] = queries["llm_query"]
                             break
-                
+
                 if stream:
                     yield f"data: ### {LOCALE_MSG['answering']}\n\n"
 
@@ -214,7 +238,7 @@ class Orchestrator:
                     messages=final_messages,
                     max_tokens=max_tokens,
                     temperature=temperature,
-                    stream=stream
+                    stream=stream,
                 )
 
                 if stream:
@@ -226,9 +250,11 @@ class Orchestrator:
                     ttft_time = datetime.now(tz=self.timezone) - start_time
                     message_content = response.choices[0].message.content
                     yield message_content
-            
+
             elif search_engine == SearchEngine.BING_GROUNDING:
-                logger.info(f"##### Using Bing Grounding for search ##### (queries={queries}) ")
+                logger.info(
+                    f"##### Using Bing Grounding for search ##### (queries={queries}) "
+                )
                 if stream:
                     yield f"data: ### {LOCALE_MSG['search_and_answer']}\n\n"
 
@@ -237,9 +263,9 @@ class Orchestrator:
                     max_tokens=max_tokens,
                     temperature=temperature,
                     stream=stream,
-                    locale=locale
+                    locale=locale,
                 )
-                
+
                 if stream:
                     first_chunk = True
                     async for chunk in search_generator:
@@ -260,16 +286,18 @@ class Orchestrator:
                 yield f"Error: {error_msg}"
 
             if elapsed_time and ttft_time is not None:
-                logger.info(f"Response generated successfully in {ttft_time.total_seconds()} seconds")
+                logger.info(
+                    f"Response generated successfully in {ttft_time.total_seconds()} seconds"
+                )
                 yield " \n\n"
                 yield " \n\n"
                 yield f"Response generated successfully in {ttft_time.total_seconds()} seconds \n\n"
             return
-                        
+
         except Exception as e:
-            error_msg = f"Azure OpenAI API {'streaming ' if stream else ''}error: {str(e)}"
+            error_msg = (
+                f"Azure OpenAI API {'streaming ' if stream else ''}error: {str(e)}"
+            )
             logger.error(error_msg)
 
             yield f"Error: {str(e)}"
-
-

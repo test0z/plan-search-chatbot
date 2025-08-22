@@ -1,8 +1,6 @@
 from enum import Enum, EnumMeta
-from typing import Any, TypeVar
+from typing import Any
 
-
-    
 
 class CaseInsensitiveEnumMeta(EnumMeta):
     """Enum metaclass to allow for interoperability with case-insensitive strings.
@@ -41,8 +39,7 @@ class CaseInsensitiveEnumMeta(EnumMeta):
             return cls._member_map_[name.upper()]
         except KeyError as err:
             raise AttributeError(name) from err
-        
-        
+
 
 class SearchEngine(str, Enum, metaclass=CaseInsensitiveEnumMeta):
     """The possible values for search engines."""

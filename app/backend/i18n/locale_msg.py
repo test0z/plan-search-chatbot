@@ -42,5 +42,5 @@ LOCALE_MESSAGES = {
         "YouTube_done": "YouTube Search complete.",
         "context_length": "context log supports up to 2000 characters. For additional information, please refer to the search results.",
         "intent_small_talk": "User Intent - small talk.",
-    }
+    },
 }

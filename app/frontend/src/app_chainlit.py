@@ -19,7 +19,7 @@ ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "admin123")
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-@cl.password_auth_callback
+#@cl.password_auth_callback
 def auth_callback(username: str, password: str):
     """Simple password authentication - fixed version"""
     try:
